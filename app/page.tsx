@@ -10,20 +10,11 @@ const SITE_URL = "https://www.dhcheolgeo.com";
 
 const COMPANY = "DH 종합철거";
 
-// 실제 대표 전화번호를 입력하세요.
-// 예: "01012345678"
-const PHONE = "";
+const PHONE = "01094134686";
 
-const PHONE_DISPLAY = PHONE
-  ? PHONE.replace(
-      /^(010)(\d{4})(\d{4})$/,
-      "$1-$2-$3"
-    )
-  : "";
+const PHONE_DISPLAY = "010-9413-4686";
 
-const PHONE_LINK = PHONE
-  ? `tel:${PHONE}`
-  : "#contact";
+const PHONE_LINK = `tel:${PHONE}`;
 
 /* =====================================
    메인 홈페이지 SEO
@@ -232,13 +223,9 @@ export default function Home() {
     "@type": "Organization",
     name: COMPANY,
     url: SITE_URL,
+    telephone: PHONE_DISPLAY,
     description:
       "주택·아파트·상가·사무실 철거 및 원상복구 상담",
-    ...(PHONE
-      ? {
-          telephone: PHONE_DISPLAY,
-        }
-      : {}),
   };
 
   return (
@@ -246,10 +233,9 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(businessSchema).replace(
-            /</g,
-            "\\u003c"
-          ),
+          __html: JSON.stringify(
+            businessSchema
+          ).replace(/</g, "\\u003c"),
         }}
       />
 
@@ -260,14 +246,24 @@ export default function Home() {
       <header className="site-header">
         <div className="container header-inner">
           <Link href="/" className="brand">
-            <span className="brand-mark">DH</span>
+            <span className="brand-mark">
+              DH
+            </span>
             종합철거
           </Link>
 
           <nav className="nav-links">
-            <a href="#services">철거 서비스</a>
-            <a href="#regions">출장 지역</a>
-            <a href="#contact">견적 문의</a>
+            <a href="#services">
+              철거 서비스
+            </a>
+
+            <a href="#regions">
+              출장 지역
+            </a>
+
+            <a href="#contact">
+              견적 문의
+            </a>
           </nav>
         </div>
       </header>
@@ -287,7 +283,9 @@ export default function Home() {
               <h1>
                 주택부터 상가까지
                 <br />
-                <strong>DH 종합철거</strong>
+                <strong>
+                  DH 종합철거
+                </strong>
               </h1>
 
               <p>
@@ -306,9 +304,7 @@ export default function Home() {
                   href={PHONE_LINK}
                   className="btn btn-primary"
                 >
-                  {PHONE
-                    ? `전화 상담 ${PHONE_DISPLAY}`
-                    : "철거 견적 문의"}
+                  전화 상담 {PHONE_DISPLAY}
                 </a>
 
                 <a
@@ -386,7 +382,9 @@ export default function Home() {
                 OUR SERVICES
               </span>
 
-              <h2>DH 종합철거 서비스</h2>
+              <h2>
+                DH 종합철거 서비스
+              </h2>
 
               <p>
                 현장 상황과 철거 범위를 확인하여
@@ -415,9 +413,13 @@ export default function Home() {
                   </div>
 
                   <div className="card-body">
-                    <h3>{service.title}</h3>
+                    <h3>
+                      {service.title}
+                    </h3>
 
-                    <p>{service.desc}</p>
+                    <p>
+                      {service.desc}
+                    </p>
 
                     <Link
                       href={`/services/${service.slug}`}
@@ -443,7 +445,9 @@ export default function Home() {
                 ESTIMATE
               </span>
 
-              <h2>철거 견적 상담 안내</h2>
+              <h2>
+                철거 견적 상담 안내
+              </h2>
 
               <p>
                 현장 조건에 따라 작업 방법과
@@ -474,8 +478,13 @@ export default function Home() {
                   key={item.title}
                 >
                   <div className="card-body">
-                    <h3>{item.title}</h3>
-                    <p>{item.desc}</p>
+                    <h3>
+                      {item.title}
+                    </h3>
+
+                    <p>
+                      {item.desc}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -497,7 +506,9 @@ export default function Home() {
                 SERVICE AREAS
               </span>
 
-              <h2>지역별 철거 상담</h2>
+              <h2>
+                지역별 철거 상담
+              </h2>
 
               <p>
                 서울·경기·인천·충남·충북
@@ -548,7 +559,9 @@ export default function Home() {
           className="contact-section"
         >
           <div className="container">
-            <h2>DH 종합철거 견적 문의</h2>
+            <h2>
+              DH 종합철거 견적 문의
+            </h2>
 
             <p>
               철거 현장의 위치, 작업 범위,
@@ -557,19 +570,12 @@ export default function Home() {
             </p>
 
             <div className="contact-actions">
-              {PHONE ? (
-                <a
-                  href={PHONE_LINK}
-                  className="btn btn-primary"
-                >
-                  전화 상담 {PHONE_DISPLAY}
-                </a>
-              ) : (
-                <p>
-                  대표 전화번호 등록 후
-                  전화 상담을 이용하실 수 있습니다.
-                </p>
-              )}
+              <a
+                href={PHONE_LINK}
+                className="btn btn-primary"
+              >
+                전화 상담 {PHONE_DISPLAY}
+              </a>
 
               <a
                 href="#regions"
@@ -589,7 +595,9 @@ export default function Home() {
       <footer className="site-footer">
         <div className="container footer-inner">
           <div>
-            <h3>{COMPANY}</h3>
+            <h3>
+              {COMPANY}
+            </h3>
 
             <div className="footer-info">
               <p>
@@ -602,9 +610,9 @@ export default function Home() {
                 그 외 지역 문의
               </p>
 
-              {PHONE && (
-                <p>전화: {PHONE_DISPLAY}</p>
-              )}
+              <p>
+                전화: {PHONE_DISPLAY}
+              </p>
             </div>
           </div>
 
@@ -614,7 +622,9 @@ export default function Home() {
               {COMPANY}.
             </p>
 
-            <p>All rights reserved.</p>
+            <p>
+              All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
