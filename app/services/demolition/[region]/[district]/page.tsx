@@ -11,17 +11,11 @@ const SITE_URL = "https://www.dhcheolgeo.com";
 
 const COMPANY = "DH 종합철거";
 
-// 실제 대표 전화번호 입력
-// 예: "01012345678"
+const PHONE = "01094134686";
 
-const PHONE = "";
+const PHONE_DISPLAY = "010-9413-4686";
 
-const PHONE_DISPLAY = PHONE
-  ? PHONE.replace(
-      /^(010)(\d{4})(\d{4})$/,
-      "$1-$2-$3"
-    )
-  : "";
+const PHONE_LINK = `tel:${PHONE}`;
 
 /* =====================================
    지역별 데이터
@@ -314,6 +308,10 @@ export default async function RegionPage({
   const PAGE_URL =
     `${SITE_URL}/services/demolition/${region}/${district}`;
 
+  /* =====================================
+     이동 경로 구조화 데이터
+  ===================================== */
+
   const breadcrumbSchema = {
     "@context": "https://schema.org",
 
@@ -341,6 +339,10 @@ export default async function RegionPage({
     ],
   };
 
+  /* =====================================
+     지역별 철거 구조화 데이터
+  ===================================== */
+
   const serviceSchema = {
     "@context": "https://schema.org",
 
@@ -366,6 +368,7 @@ export default async function RegionPage({
       "@type": "Organization",
       name: COMPANY,
       url: SITE_URL,
+      telephone: PHONE_DISPLAY,
     },
 
     areaServed: {
@@ -373,6 +376,10 @@ export default async function RegionPage({
       name: locationName,
     },
   };
+
+  /* =====================================
+     지역별 철거 서비스
+  ===================================== */
 
   const SERVICES = [
     {
@@ -404,6 +411,38 @@ export default async function RegionPage({
       desc:
         "상가 및 사무실의 계약 종료에 따른 철거와 원상복구 범위를 상담합니다.",
       href: "/services/restoration",
+    },
+  ];
+
+  /* =====================================
+     지역별 견적 체크리스트
+  ===================================== */
+
+  const CHECKLIST = [
+    {
+      title: "현장 위치",
+      desc:
+        `${locationName} 내 철거 현장의 위치와 건물 유형을 알려주세요.`,
+    },
+    {
+      title: "철거 범위",
+      desc:
+        "철거할 공간의 면적과 철거 대상 시설물을 알려주세요.",
+    },
+    {
+      title: "작업 조건",
+      desc:
+        "엘리베이터 이용 여부, 현장 진입로, 작업 가능 시간 등을 확인해 주세요.",
+    },
+    {
+      title: "현장 사진",
+      desc:
+        "철거 대상 공간을 확인할 수 있는 사진을 준비해 주세요.",
+    },
+    {
+      title: "작업 일정",
+      desc:
+        "철거를 희망하는 날짜와 원상복구가 필요한 일정을 알려주세요.",
     },
   ];
 
@@ -466,6 +505,7 @@ export default async function RegionPage({
             <h1>
               {locationName} 철거업체
               <br />
+
               <strong>
                 DH 종합철거
               </strong>
@@ -483,21 +523,12 @@ export default async function RegionPage({
             </p>
 
             <div className="hero-actions">
-              {PHONE ? (
-                <a
-                  href={`tel:${PHONE}`}
-                  className="btn btn-primary"
-                >
-                  전화 상담 {PHONE_DISPLAY}
-                </a>
-              ) : (
-                <Link
-                  href="/#contact"
-                  className="btn btn-primary"
-                >
-                  철거 견적 상담 안내
-                </Link>
-              )}
+              <a
+                href={PHONE_LINK}
+                className="btn btn-primary"
+              >
+                전화 상담 {PHONE_DISPLAY}
+              </a>
 
               <Link
                 href="/#regions"
@@ -537,9 +568,13 @@ export default async function RegionPage({
                   className="card"
                 >
                   <div className="card-body">
-                    <h3>{service.title}</h3>
+                    <h3>
+                      {service.title}
+                    </h3>
 
-                    <p>{service.desc}</p>
+                    <p>
+                      {service.desc}
+                    </p>
 
                     <Link
                       href={service.href}
@@ -577,40 +612,19 @@ export default async function RegionPage({
             </div>
 
             <div className="card-grid">
-              {[
-                {
-                  title: "현장 위치",
-                  desc:
-                    `${locationName} 내 철거 현장의 위치와 건물 유형을 알려주세요.`,
-                },
-                {
-                  title: "철거 범위",
-                  desc:
-                    "철거할 공간의 면적과 철거 대상 시설물을 알려주세요.",
-                },
-                {
-                  title: "작업 조건",
-                  desc:
-                    "엘리베이터 이용 여부, 현장 진입로, 작업 가능 시간 등을 확인해 주세요.",
-                },
-                {
-                  title: "현장 사진",
-                  desc:
-                    "철거 대상 공간을 확인할 수 있는 사진을 준비해 주세요.",
-                },
-                {
-                  title: "작업 일정",
-                  desc:
-                    "철거를 희망하는 날짜와 원상복구가 필요한 일정을 알려주세요.",
-                },
-              ].map((item) => (
+              {CHECKLIST.map((item) => (
                 <article
                   key={item.title}
                   className="card"
                 >
                   <div className="card-body">
-                    <h3>{item.title}</h3>
-                    <p>{item.desc}</p>
+                    <h3>
+                      {item.title}
+                    </h3>
+
+                    <p>
+                      {item.desc}
+                    </p>
                   </div>
                 </article>
               ))}
@@ -629,7 +643,9 @@ export default async function RegionPage({
                 SERVICE AREAS
               </span>
 
-              <h2>다른 지역 철거 상담</h2>
+              <h2>
+                다른 지역 철거 상담
+              </h2>
 
               <p>
                 서울·경기·인천·충남·충북
@@ -664,21 +680,12 @@ export default async function RegionPage({
             </p>
 
             <div className="contact-actions">
-              {PHONE ? (
-                <a
-                  href={`tel:${PHONE}`}
-                  className="btn btn-primary"
-                >
-                  전화 상담 {PHONE_DISPLAY}
-                </a>
-              ) : (
-                <Link
-                  href="/#contact"
-                  className="btn btn-primary"
-                >
-                  철거 상담 안내
-                </Link>
-              )}
+              <a
+                href={PHONE_LINK}
+                className="btn btn-primary"
+              >
+                전화 상담 {PHONE_DISPLAY}
+              </a>
 
               <Link
                 href="/"
@@ -698,7 +705,9 @@ export default async function RegionPage({
       <footer className="site-footer">
         <div className="container footer-inner">
           <div>
-            <h3>{COMPANY}</h3>
+            <h3>
+              {COMPANY}
+            </h3>
 
             <div className="footer-info">
               <p>
@@ -710,11 +719,9 @@ export default async function RegionPage({
                 및 원상복구
               </p>
 
-              {PHONE && (
-                <p>
-                  전화: {PHONE_DISPLAY}
-                </p>
-              )}
+              <p>
+                전화: {PHONE_DISPLAY}
+              </p>
             </div>
           </div>
 
@@ -724,7 +731,9 @@ export default async function RegionPage({
               {COMPANY}.
             </p>
 
-            <p>All rights reserved.</p>
+            <p>
+              All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
