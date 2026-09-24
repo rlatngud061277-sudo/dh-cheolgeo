@@ -1,12 +1,14 @@
 
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 
 /* =====================================
    DH 종합철거 기본 정보
 ===================================== */
 
-const SITE_URL = "https://www.dhcheolgeo.com";
+const SITE_URL =
+  "https://www.dhcheolgeo.com";
 
 const COMPANY = "DH 종합철거";
 
@@ -19,7 +21,7 @@ const PHONE_DISPLAY = "010-5473-1244";
 const PHONE_LINK = `tel:${PHONE}`;
 
 /* =====================================
-   메인 홈페이지 SEO
+   메인 홈페이지 SEO 설정
 ===================================== */
 
 export const metadata: Metadata = {
@@ -36,64 +38,92 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "DH 종합철거 | 철거 전문업체",
+    type: "website",
+    locale: "ko_KR",
+    siteName: COMPANY,
+    url: SITE_URL,
+
+    title:
+      "DH 종합철거 | 철거 전문업체",
+
     description:
       "주택·아파트·상가·사무실 철거 및 원상복구 상담. 서울·경기·인천·충남·충북 지역 철거 문의.",
-    url: SITE_URL,
-    type: "website",
   },
 };
 
 /* =====================================
-   철거 서비스
+   철거 서비스 목록
 ===================================== */
 
 const SERVICES = [
   {
     title: "주택·아파트 철거",
+
     desc:
       "주택과 아파트 내부 철거 및 리모델링 전 철거 작업을 상담합니다.",
+
     slug: "house",
+
     icon: "🏠",
   },
+
   {
     title: "상가·매장 철거",
+
     desc:
       "상가 및 매장의 내부 시설물 철거와 공간 정리 작업을 안내합니다.",
+
     slug: "commercial",
+
     icon: "🏢",
   },
+
   {
     title: "사무실 철거",
+
     desc:
       "사무실 내부 칸막이와 기존 시설물 철거 등 현장 상황에 맞는 작업을 상담합니다.",
+
     slug: "office",
+
     icon: "🏬",
   },
+
   {
     title: "내부·부분 철거",
+
     desc:
       "벽체, 바닥, 천장 등 현장에 필요한 부분 철거 작업을 안내합니다.",
+
     slug: "interior",
+
     icon: "🔨",
   },
+
   {
     title: "원상복구",
+
     desc:
       "상가와 사무실의 계약 종료 및 이전에 따른 원상복구 작업을 상담합니다.",
+
     slug: "restoration",
+
     icon: "🛠️",
   },
 ];
 
 /* =====================================
-   출장 지역
+   서울·경기·인천·충남·충북 지역 목록
+
+   기존 지역별 철거 페이지 주소 유지
 ===================================== */
 
 const REGIONS = [
   {
     name: "서울특별시",
+
     slug: "seoul",
+
     districts: [
       ["강남구", "gangnam"],
       ["강동구", "gangdong"],
@@ -122,9 +152,12 @@ const REGIONS = [
       ["중랑구", "jungnang"],
     ],
   },
+
   {
     name: "경기도",
+
     slug: "gyeonggi",
+
     districts: [
       ["수원시", "suwon"],
       ["성남시", "seongnam"],
@@ -159,9 +192,12 @@ const REGIONS = [
       ["연천군", "yeoncheon"],
     ],
   },
+
   {
     name: "인천광역시",
+
     slug: "incheon",
+
     districts: [
       ["중구", "jung"],
       ["동구", "dong"],
@@ -175,9 +211,12 @@ const REGIONS = [
       ["옹진군", "ongjin"],
     ],
   },
+
   {
     name: "충청남도",
+
     slug: "chungnam",
+
     districts: [
       ["천안시", "cheonan"],
       ["아산시", "asan"],
@@ -196,9 +235,12 @@ const REGIONS = [
       ["태안군", "taean"],
     ],
   },
+
   {
     name: "충청북도",
+
     slug: "chungbuk",
+
     districts: [
       ["청주시", "cheongju"],
       ["충주시", "chungju"],
@@ -216,22 +258,112 @@ const REGIONS = [
 ];
 
 /* =====================================
+   견적 상담 안내
+===================================== */
+
+const ESTIMATE_STEPS = [
+  {
+    title: "01. 현장 위치",
+
+    desc:
+      "철거 현장의 지역과 주소를 알려주세요.",
+  },
+
+  {
+    title: "02. 철거 범위",
+
+    desc:
+      "철거할 공간과 작업 범위를 알려주세요.",
+  },
+
+  {
+    title: "03. 현장 사진",
+
+    desc:
+      "현장 사진과 작업 희망 날짜를 준비해 주세요.",
+  },
+];
+
+/* =====================================
+   모바일 레이아웃 보강
+
+   기존 globals.css와 함께 적용
+===================================== */
+
+const fullWidthStyle: CSSProperties = {
+  width: "100%",
+  minWidth: 0,
+  maxWidth: "100%",
+};
+
+const cardStyle: CSSProperties = {
+  ...fullWidthStyle,
+  display: "flex",
+  flexDirection: "column",
+  overflow: "hidden",
+};
+
+const cardBodyStyle: CSSProperties = {
+  ...fullWidthStyle,
+  display: "flex",
+  flex: 1,
+  flexDirection: "column",
+  alignItems: "flex-start",
+  textAlign: "left",
+};
+
+const cardTitleStyle: CSSProperties = {
+  ...fullWidthStyle,
+  wordBreak: "keep-all",
+  overflowWrap: "break-word",
+  whiteSpace: "normal",
+};
+
+const cardTextStyle: CSSProperties = {
+  ...fullWidthStyle,
+  wordBreak: "keep-all",
+  overflowWrap: "break-word",
+  whiteSpace: "normal",
+};
+
+/* =====================================
    메인 홈페이지
 ===================================== */
 
 export default function Home() {
+  /* =====================================
+     업체 구조화 데이터
+  ===================================== */
+
   const businessSchema = {
     "@context": "https://schema.org",
+
     "@type": "Organization",
+
     name: COMPANY,
+
     url: SITE_URL,
+
     telephone: PHONE_DISPLAY,
+
     description:
       "주택·아파트·상가·사무실 철거 및 원상복구 상담",
+
+    areaServed: [
+      "서울특별시",
+      "경기도",
+      "인천광역시",
+      "충청남도",
+      "충청북도",
+    ],
   };
 
   return (
     <>
+      {/* =====================================
+          업체 구조화 데이터
+      ===================================== */}
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -247,14 +379,22 @@ export default function Home() {
 
       <header className="site-header">
         <div className="container header-inner">
-          <Link href="/" className="brand">
+          <Link
+            href="/"
+            className="brand"
+            aria-label="DH 종합철거 메인 홈페이지"
+          >
             <span className="brand-mark">
               DH
             </span>
+
             종합철거
           </Link>
 
-          <nav className="nav-links">
+          <nav
+            className="nav-links"
+            aria-label="주요 메뉴"
+          >
             <a href="#services">
               철거 서비스
             </a>
@@ -277,7 +417,7 @@ export default function Home() {
 
         <section className="hero">
           <div className="container hero-inner">
-            <div>
+            <div style={fullWidthStyle}>
               <span className="hero-label">
                 DH DEMOLITION & REMOVAL
               </span>
@@ -285,6 +425,7 @@ export default function Home() {
               <h1>
                 주택부터 상가까지
                 <br />
+
                 <strong>
                   DH 종합철거
                 </strong>
@@ -298,6 +439,7 @@ export default function Home() {
               <p>
                 서울·경기·인천·충남·충북
                 <br />
+
                 그 외 지역 문의
               </p>
 
@@ -305,6 +447,7 @@ export default function Home() {
                 <a
                   href={PHONE_LINK}
                   className="btn btn-primary"
+                  aria-label={`DH 종합철거 전화 상담 ${PHONE_DISPLAY}`}
                 >
                   전화 상담 {PHONE_DISPLAY}
                 </a>
@@ -318,18 +461,31 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="hero-image">
+            {/* =====================================
+                대표 로고 영역
+            ===================================== */}
+
+            <div
+              className="hero-image"
+              style={fullWidthStyle}
+            >
               <div
                 style={{
                   minHeight: 300,
+                  width: "100%",
+                  minWidth: 0,
+
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: 30,
+
+                  padding: 24,
                   textAlign: "center",
+
                   background:
                     "linear-gradient(135deg, #242424, #111111)",
+
                   border: "1px solid #444",
                 }}
               >
@@ -350,6 +506,8 @@ export default function Home() {
                     fontSize: 26,
                     fontWeight: 900,
                     color: "#ffffff",
+
+                    wordBreak: "keep-all",
                   }}
                 >
                   종합철거
@@ -361,6 +519,9 @@ export default function Home() {
                     color: "#dddddd",
                     fontSize: 12,
                     letterSpacing: 2,
+
+                    maxWidth: "100%",
+                    overflowWrap: "break-word",
                   }}
                 >
                   DEMOLITION & REMOVAL
@@ -377,6 +538,7 @@ export default function Home() {
         <section
           id="services"
           className="section"
+          aria-labelledby="services-heading"
         >
           <div className="container">
             <div className="section-heading">
@@ -384,7 +546,7 @@ export default function Home() {
                 OUR SERVICES
               </span>
 
-              <h2>
+              <h2 id="services-heading">
                 DH 종합철거 서비스
               </h2>
 
@@ -394,18 +556,26 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="card-grid">
+            <div
+              className="card-grid"
+              style={fullWidthStyle}
+            >
               {SERVICES.map((service) => (
                 <article
                   key={service.slug}
                   className="card"
+                  style={cardStyle}
                 >
                   <div
                     style={{
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
+
+                      width: "100%",
+                      minWidth: 0,
                       minHeight: 150,
+
                       background: "#f6f7f9",
                       fontSize: 52,
                     }}
@@ -414,18 +584,28 @@ export default function Home() {
                     {service.icon}
                   </div>
 
-                  <div className="card-body">
-                    <h3>
+                  <div
+                    className="card-body"
+                    style={cardBodyStyle}
+                  >
+                    <h3 style={cardTitleStyle}>
                       {service.title}
                     </h3>
 
-                    <p>
+                    <p style={cardTextStyle}>
                       {service.desc}
                     </p>
 
                     <Link
                       href={`/services/${service.slug}`}
                       className="card-link"
+                      style={{
+                        display: "inline-block",
+                        maxWidth: "100%",
+
+                        wordBreak: "keep-all",
+                        overflowWrap: "break-word",
+                      }}
                     >
                       자세히 보기 →
                     </Link>
@@ -437,17 +617,20 @@ export default function Home() {
         </section>
 
         {/* =====================================
-            견적 상담 안내
+            철거 견적 상담 안내
         ===================================== */}
 
-        <section className="section section-alt">
+        <section
+          className="section section-alt"
+          aria-labelledby="estimate-heading"
+        >
           <div className="container">
             <div className="section-heading">
               <span className="section-tag">
                 ESTIMATE
               </span>
 
-              <h2>
+              <h2 id="estimate-heading">
                 철거 견적 상담 안내
               </h2>
 
@@ -457,50 +640,42 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="card-grid">
-              {[
-                {
-                  title: "01. 현장 위치",
-                  desc:
-                    "철거 현장의 지역과 주소를 알려주세요.",
-                },
-                {
-                  title: "02. 철거 범위",
-                  desc:
-                    "철거할 공간과 작업 범위를 알려주세요.",
-                },
-                {
-                  title: "03. 현장 사진",
-                  desc:
-                    "현장 사진과 작업 희망 날짜를 준비해 주세요.",
-                },
-              ].map((item) => (
-                <div
-                  className="card"
+            <div
+              className="card-grid"
+              style={fullWidthStyle}
+            >
+              {ESTIMATE_STEPS.map((item) => (
+                <article
                   key={item.title}
+                  className="card"
+                  style={cardStyle}
                 >
-                  <div className="card-body">
-                    <h3>
+                  <div
+                    className="card-body"
+                    style={cardBodyStyle}
+                  >
+                    <h3 style={cardTitleStyle}>
                       {item.title}
                     </h3>
 
-                    <p>
+                    <p style={cardTextStyle}>
                       {item.desc}
                     </p>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
         {/* =====================================
-            출장 지역
+            지역별 철거 상담
         ===================================== */}
 
         <section
           id="regions"
           className="section"
+          aria-labelledby="regions-heading"
         >
           <div className="container">
             <div className="section-heading">
@@ -508,13 +683,14 @@ export default function Home() {
                 SERVICE AREAS
               </span>
 
-              <h2>
+              <h2 id="regions-heading">
                 지역별 철거 상담
               </h2>
 
               <p>
                 서울·경기·인천·충남·충북
                 <br />
+
                 그 외 지역 문의
               </p>
             </div>
@@ -524,23 +700,38 @@ export default function Home() {
                 key={region.slug}
                 style={{
                   marginBottom: 42,
+                  width: "100%",
+                  minWidth: 0,
                 }}
               >
                 <h3
                   style={{
                     marginBottom: 16,
+                    wordBreak: "keep-all",
                   }}
                 >
                   {region.name} 철거
                 </h3>
 
-                <div className="region-grid">
+                <div
+                  className="region-grid"
+                  style={fullWidthStyle}
+                >
                   {region.districts.map(
                     ([district, slug]) => (
                       <Link
-                        key={slug}
+                        key={`${region.slug}-${slug}`}
                         href={`/services/demolition/${region.slug}/${slug}`}
                         className="region-link"
+                        style={{
+                          minWidth: 0,
+                          maxWidth: "100%",
+
+                          wordBreak: "keep-all",
+                          overflowWrap: "break-word",
+
+                          textAlign: "center",
+                        }}
                       >
                         {district} 철거
                       </Link>
@@ -553,15 +744,16 @@ export default function Home() {
         </section>
 
         {/* =====================================
-            상담 문의
+            최종 상담 문의
         ===================================== */}
 
         <section
           id="contact"
           className="contact-section"
+          aria-labelledby="contact-heading"
         >
           <div className="container">
-            <h2>
+            <h2 id="contact-heading">
               DH 종합철거 견적 문의
             </h2>
 
@@ -575,6 +767,7 @@ export default function Home() {
               <a
                 href={PHONE_LINK}
                 className="btn btn-primary"
+                aria-label={`DH 종합철거 전화 상담 ${PHONE_DISPLAY}`}
               >
                 전화 상담 {PHONE_DISPLAY}
               </a>
@@ -597,12 +790,12 @@ export default function Home() {
       <footer className="site-footer">
         <div className="container footer-inner">
           <div>
-            <h3>
-              {COMPANY}
-            </h3>
+            <h3>{COMPANY}</h3>
 
             <div className="footer-info">
-              <p>대표자: {OWNER}</p>
+              <p>
+                대표자: {OWNER}
+              </p>
 
               <p>
                 주택·아파트·상가·사무실 철거
@@ -615,7 +808,10 @@ export default function Home() {
               </p>
 
               <p>
-                전화: {PHONE_DISPLAY}
+                전화:{" "}
+                <a href={PHONE_LINK}>
+                  {PHONE_DISPLAY}
+                </a>
               </p>
             </div>
           </div>
