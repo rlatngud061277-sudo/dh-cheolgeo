@@ -11,9 +11,11 @@ const SITE_URL = "https://www.dhcheolgeo.com";
 
 const COMPANY = "DH 종합철거";
 
-const PHONE = "01094134686";
+const OWNER = "이덕재";
 
-const PHONE_DISPLAY = "010-9413-4686";
+const PHONE = "01054731244";
+
+const PHONE_DISPLAY = "010-5473-1244";
 
 const PHONE_LINK = `tel:${PHONE}`;
 
@@ -81,7 +83,7 @@ const REGIONS = {
       guri: "구리시",
       uijeongbu: "의정부시",
       paju: "파주시",
-      yangju: "양주시",
+      yangju: "yangju",
       dongducheon: "동두천시",
       pocheon: "포천시",
       icheon: "이천시",
@@ -710,6 +712,8 @@ export default async function RegionPage({
             </h3>
 
             <div className="footer-info">
+              <p>대표자: {OWNER}</p>
+
               <p>
                 {locationName} 철거 상담
               </p>
