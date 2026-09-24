@@ -25,9 +25,6 @@ const PHONE_DISPLAY = PHONE
 
 /* =====================================
    지역별 데이터
-
-   메인 홈페이지에서 사용한 지역 및
-   주소와 동일하게 설정
 ===================================== */
 
 const REGIONS = {
@@ -729,8 +726,8 @@ export default async function RegionPage({
 
             <p>All rights reserved.</p>
           </div>
-        </footer>
-      </div>
+        </div>
+      </footer>
     </>
   );
 }
