@@ -32,6 +32,21 @@ export const metadata: Metadata = {
 
   applicationName: SITE_NAME,
 
+  /* =====================================
+     네이버 서치어드바이저 소유확인
+  ===================================== */
+
+  verification: {
+    other: {
+      "naver-site-verification":
+        "9da1cd6fecafeb3639287b55718ce2ba6d1eff62",
+    },
+  },
+
+  /* =====================================
+     검색로봇 수집 설정
+  ===================================== */
+
   robots: {
     index: true,
     follow: true,
@@ -42,6 +57,10 @@ export const metadata: Metadata = {
     },
   },
 
+  /* =====================================
+     SNS 및 대표 이미지
+  ===================================== */
+
   openGraph: {
     type: "website",
     locale: "ko_KR",
@@ -49,6 +68,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
+
     images: [
       {
         url: "/og-image.jpg",
@@ -66,9 +86,17 @@ export const metadata: Metadata = {
     images: ["/og-image.jpg"],
   },
 
+  /* =====================================
+     대표 홈페이지 주소
+  ===================================== */
+
   alternates: {
     canonical: SITE_URL,
   },
+
+  /* =====================================
+     홈페이지 아이콘
+  ===================================== */
 
   icons: {
     icon: "/favicon.ico",
