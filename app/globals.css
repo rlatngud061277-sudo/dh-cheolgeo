@@ -22,11 +22,15 @@
 
 html {
   scroll-behavior: smooth;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  min-width: 320px;
   background: var(--background);
   color: var(--text);
   font-family:
@@ -35,7 +39,9 @@ body {
     "Malgun Gothic",
     sans-serif;
   line-height: 1.65;
-  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-wrap: normal;
+  word-break: keep-all;
 }
 
 a {
@@ -66,6 +72,8 @@ h3,
 h4,
 p {
   margin-top: 0;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 h1,
@@ -95,6 +103,7 @@ h3 {
 .container {
   width: min(100% - 36px, 1180px);
   margin-inline: auto;
+  min-width: 0;
 }
 
 .section {
@@ -120,11 +129,13 @@ h3 {
 
 .section-tag {
   display: inline-block;
+  max-width: 100%;
   margin-bottom: 12px;
   color: var(--primary-dark);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.07em;
+  overflow-wrap: break-word;
 }
 
 /* =====================================
@@ -135,6 +146,7 @@ h3 {
   position: sticky;
   top: 0;
   z-index: 100;
+  width: 100%;
   background: #ffffff;
   border-bottom: 1px solid var(--border);
 }
@@ -150,10 +162,12 @@ h3 {
 .brand {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 10px;
   font-size: 21px;
   font-weight: 900;
   letter-spacing: -0.04em;
+  white-space: nowrap;
 }
 
 .brand-mark {
@@ -164,12 +178,16 @@ h3 {
 .nav-links {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 24px;
+  min-width: 0;
 }
 
 .nav-links a {
   font-size: 14px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -186,11 +204,14 @@ h3 {
   justify-content: center;
   gap: 8px;
   min-height: 48px;
+  max-width: 100%;
   padding: 12px 22px;
   border: 1px solid transparent;
   border-radius: 10px;
   font-weight: 800;
   text-align: center;
+  word-break: keep-all;
+  overflow-wrap: break-word;
   transition:
     background 0.2s ease,
     transform 0.2s ease;
@@ -229,6 +250,7 @@ h3 {
 ===================================== */
 
 .hero {
+  width: 100%;
   padding: 88px 0;
   background:
     linear-gradient(
@@ -241,9 +263,15 @@ h3 {
 
 .hero-inner {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    minmax(0, 0.9fr);
   align-items: center;
   gap: 48px;
+}
+
+.hero-inner > * {
+  min-width: 0;
 }
 
 .hero-label {
@@ -256,6 +284,7 @@ h3 {
 
 .hero h1 {
   margin-bottom: 20px;
+  word-break: keep-all;
 }
 
 .hero h1 strong {
@@ -265,6 +294,7 @@ h3 {
 .hero p {
   color: #e5e7eb;
   font-size: 17px;
+  word-break: keep-all;
 }
 
 .hero-actions {
@@ -275,6 +305,8 @@ h3 {
 }
 
 .hero-image {
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
   border-radius: var(--radius);
   background: #222222;
@@ -282,15 +314,25 @@ h3 {
 
 /* =====================================
    서비스 및 시공사례 카드
+
+   minmax(0, 1fr) 및 min-width 설정으로
+   좁은 화면에서 세로 글자 표시 방지
 ===================================== */
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
   gap: 22px;
+  width: 100%;
+  min-width: 0;
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -305,21 +347,44 @@ h3 {
 }
 
 .card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
   padding: 22px;
+  text-align: left;
 }
 
 .card-body h3 {
+  width: 100%;
   margin-bottom: 10px;
+  font-size: 20px;
+  line-height: 1.45;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .card-body p {
+  width: 100%;
   color: var(--muted);
   font-size: 14px;
+  line-height: 1.8;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .card-link {
+  display: inline-block;
+  max-width: 100%;
+  margin-top: auto;
+  padding-top: 8px;
   color: var(--primary-dark);
+  font-size: 14px;
   font-weight: 800;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* =====================================
@@ -328,14 +393,18 @@ h3 {
 
 .region-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
   gap: 12px;
+  width: 100%;
+  min-width: 0;
 }
 
 .region-link {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
   min-height: 48px;
   padding: 12px;
   border: 1px solid var(--border);
@@ -344,6 +413,8 @@ h3 {
   text-align: center;
   font-size: 14px;
   font-weight: 700;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .region-link:hover {
@@ -356,6 +427,7 @@ h3 {
 ===================================== */
 
 .contact-section {
+  width: 100%;
   padding: 68px 0;
   background: var(--black);
   color: #ffffff;
@@ -379,6 +451,7 @@ h3 {
 ===================================== */
 
 .site-footer {
+  width: 100%;
   padding: 42px 0;
   background: #f3f4f6;
   border-top: 1px solid var(--border);
@@ -388,6 +461,10 @@ h3 {
   display: flex;
   justify-content: space-between;
   gap: 30px;
+}
+
+.footer-inner > * {
+  min-width: 0;
 }
 
 .footer-info {
@@ -400,26 +477,43 @@ h3 {
 }
 
 /* =====================================
-   모바일 화면
+   태블릿 화면
 ===================================== */
 
 @media (max-width: 900px) {
   .hero-inner {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
   }
 
   .card-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 
   .region-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
   }
 }
 
+/* =====================================
+   모바일 화면
+
+   서비스 카드 한 줄에 1개씩 배치
+===================================== */
+
 @media (max-width: 600px) {
+  html,
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
   .container {
-    width: min(100% - 28px, 1180px);
+    width: calc(100% - 28px);
+    max-width: 1180px;
+    margin-inline: auto;
   }
 
   .section {
@@ -428,14 +522,22 @@ h3 {
 
   .header-inner {
     min-height: 64px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   .brand {
-    font-size: 18px;
+    font-size: 19px;
   }
 
   .nav-links {
-    gap: 12px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 16px;
   }
 
   .nav-links a {
@@ -446,32 +548,111 @@ h3 {
     padding: 58px 0;
   }
 
+  .hero-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 8vw, 38px);
+  }
+
   .hero p {
     font-size: 15px;
   }
 
-  .card-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .region-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .footer-inner {
-    flex-direction: column;
+  .hero-image {
+    width: 100%;
   }
 
   .hero-actions,
   .contact-actions {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .hero-actions .btn,
   .contact-actions .btn {
     width: 100%;
   }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+
+  .card {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .card-body {
+    width: 100%;
+    min-width: 0;
+    padding: 20px;
+  }
+
+  .card-body h3 {
+    font-size: 19px;
+  }
+
+  .card-body p {
+    font-size: 14px;
+  }
+
+  .region-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .region-link {
+    min-height: 48px;
+    padding: 10px 6px;
+    font-size: 13px;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    gap: 20px;
+  }
 }
+
+/* =====================================
+   작은 모바일 화면
+===================================== */
+
+@media (max-width: 360px) {
+  .container {
+    width: calc(100% - 24px);
+  }
+
+  .card-body {
+    padding: 16px;
+  }
+
+  .card-body h3 {
+    font-size: 18px;
+  }
+
+  .region-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nav-links {
+    gap: 6px 10px;
+  }
+
+  .nav-links a {
+    font-size: 11px;
+  }
+}
+
+/* =====================================
+   움직임 최소화 설정
+===================================== */
 
 @media (prefers-reduced-motion: reduce) {
   html {
