@@ -11,9 +11,11 @@ const SITE_URL = "https://www.dhcheolgeo.com";
 
 const COMPANY = "DH 종합철거";
 
-const PHONE = "01094134686";
+const OWNER = "이덕재";
 
-const PHONE_DISPLAY = "010-9413-4686";
+const PHONE = "01054731244";
+
+const PHONE_DISPLAY = "010-5473-1244";
 
 const PHONE_LINK = `tel:${PHONE}`;
 
@@ -570,6 +572,8 @@ export default async function ServicePage({
             </h3>
 
             <div className="footer-info">
+              <p>대표자: {OWNER}</p>
+
               <p>
                 {item.title} 및 철거 상담
               </p>
