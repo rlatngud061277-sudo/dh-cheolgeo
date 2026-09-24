@@ -11,19 +11,11 @@ const SITE_URL = "https://www.dhcheolgeo.com";
 
 const COMPANY = "DH 종합철거";
 
-/*
-  실제 대표 전화번호를 입력하세요.
-  예: "01012345678"
-*/
+const PHONE = "01094134686";
 
-const PHONE = "";
+const PHONE_DISPLAY = "010-9413-4686";
 
-const PHONE_DISPLAY = PHONE
-  ? PHONE.replace(
-      /^(010)(\d{4})(\d{4})$/,
-      "$1-$2-$3"
-    )
-  : "";
+const PHONE_LINK = `tel:${PHONE}`;
 
 /* =====================================
    철거 서비스별 정보
@@ -35,6 +27,7 @@ const SERVICES = {
     keyword: "주택철거·아파트철거",
     description:
       "주택 및 아파트의 내부 철거와 리모델링 전 기존 시설물 철거 작업을 상담합니다.",
+
     details: [
       "주택 및 아파트 내부 철거",
       "리모델링 전 기존 시설물 철거",
@@ -42,6 +35,7 @@ const SERVICES = {
       "바닥재 및 천장재 철거",
       "기존 수납장과 붙박이장 철거",
     ],
+
     checklist: [
       "철거할 주택 또는 아파트의 위치",
       "철거 대상 공간 및 면적",
@@ -56,6 +50,7 @@ const SERVICES = {
     keyword: "상가철거·매장철거",
     description:
       "상가 및 매장의 기존 인테리어와 내부 시설물 철거 작업을 상담합니다.",
+
     details: [
       "상가 및 매장 내부 철거",
       "기존 인테리어 시설물 철거",
@@ -63,6 +58,7 @@ const SERVICES = {
       "천장 및 바닥 마감재 철거",
       "상가 이전 및 폐업에 따른 철거 상담",
     ],
+
     checklist: [
       "상가 및 매장의 위치",
       "철거 대상 공간과 면적",
@@ -77,6 +73,7 @@ const SERVICES = {
     keyword: "사무실철거",
     description:
       "사무실 이전 및 리모델링을 위한 내부 칸막이, 천장, 바닥 등 기존 시설물 철거 작업을 상담합니다.",
+
     details: [
       "사무실 내부 철거",
       "기존 칸막이 및 파티션 철거",
@@ -84,6 +81,7 @@ const SERVICES = {
       "바닥재 및 기존 시설물 철거",
       "사무실 이전에 따른 철거 상담",
     ],
+
     checklist: [
       "사무실 위치와 작업 면적",
       "철거 대상 시설물과 구조",
@@ -98,6 +96,7 @@ const SERVICES = {
     keyword: "내부철거·부분철거",
     description:
       "주택, 상가, 사무실 등의 내부 시설물과 필요한 부분의 철거 작업을 상담합니다.",
+
     details: [
       "실내 기존 시설물 철거",
       "비내력 칸막이 철거 상담",
@@ -105,6 +104,7 @@ const SERVICES = {
       "주방 및 욕실 부분 철거",
       "리모델링을 위한 기존 마감재 철거",
     ],
+
     checklist: [
       "철거 현장의 위치",
       "철거 대상 시설물과 작업 범위",
@@ -116,9 +116,11 @@ const SERVICES = {
 
   restoration: {
     title: "상가·사무실 원상복구",
-    keyword: "상가원상복구·사무실원상복구",
+    keyword:
+      "상가원상복구·사무실원상복구",
     description:
       "상가 및 사무실의 계약 종료나 이전에 따른 철거와 원상복구 작업을 상담합니다.",
+
     details: [
       "상가 및 매장 원상복구 상담",
       "사무실 이전에 따른 원상복구",
@@ -126,6 +128,7 @@ const SERVICES = {
       "바닥 및 천장 마감재 철거",
       "계약상 원상복구 범위에 따른 작업 상담",
     ],
+
     checklist: [
       "상가 또는 사무실의 위치",
       "임대차계약상 원상복구 범위",
@@ -135,6 +138,10 @@ const SERVICES = {
     ],
   },
 } as const;
+
+/* =====================================
+   서비스 주소 확인
+===================================== */
 
 type ServiceSlug = keyof typeof SERVICES;
 
@@ -152,9 +159,11 @@ function isServiceSlug(
 ===================================== */
 
 export function generateStaticParams() {
-  return Object.keys(SERVICES).map((service) => ({
-    service,
-  }));
+  return Object.keys(SERVICES).map(
+    (service) => ({
+      service,
+    })
+  );
 }
 
 export const dynamicParams = false;
@@ -166,7 +175,9 @@ export const dynamicParams = false;
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ service: string }>;
+  params: Promise<{
+    service: string;
+  }>;
 }): Promise<Metadata> {
   const { service } = await params;
 
@@ -221,7 +232,9 @@ export async function generateMetadata({
 export default async function ServicePage({
   params,
 }: {
-  params: Promise<{ service: string }>;
+  params: Promise<{
+    service: string;
+  }>;
 }) {
   const { service } = await params;
 
@@ -233,6 +246,10 @@ export default async function ServicePage({
 
   const PAGE_URL =
     `${SITE_URL}/services/${service}`;
+
+  /* =====================================
+     서비스 구조화 데이터
+  ===================================== */
 
   const serviceSchema = {
     "@context": "https://schema.org",
@@ -251,6 +268,7 @@ export default async function ServicePage({
       "@type": "Organization",
       name: COMPANY,
       url: SITE_URL,
+      telephone: PHONE_DISPLAY,
     },
 
     areaServed: [
@@ -261,6 +279,10 @@ export default async function ServicePage({
       "충청북도",
     ],
   };
+
+  /* =====================================
+     이동 경로 구조화 데이터
+  ===================================== */
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -339,9 +361,13 @@ export default async function ServicePage({
               DH DEMOLITION & REMOVAL
             </span>
 
-            <h1>{item.title}</h1>
+            <h1>
+              {item.title}
+            </h1>
 
-            <p>{item.description}</p>
+            <p>
+              {item.description}
+            </p>
 
             <p>
               서울·경기·인천·충남·충북
@@ -350,21 +376,12 @@ export default async function ServicePage({
             </p>
 
             <div className="hero-actions">
-              {PHONE ? (
-                <a
-                  href={`tel:${PHONE}`}
-                  className="btn btn-primary"
-                >
-                  전화 상담 {PHONE_DISPLAY}
-                </a>
-              ) : (
-                <Link
-                  href="/#contact"
-                  className="btn btn-primary"
-                >
-                  견적 상담 안내
-                </Link>
-              )}
+              <a
+                href={PHONE_LINK}
+                className="btn btn-primary"
+              >
+                전화 상담 {PHONE_DISPLAY}
+              </a>
 
               <Link
                 href="/#regions"
@@ -406,13 +423,14 @@ export default async function ServicePage({
                   >
                     <div className="card-body">
                       <span className="section-tag">
-                        {String(index + 1).padStart(
-                          2,
-                          "0"
-                        )}
+                        {String(
+                          index + 1
+                        ).padStart(2, "0")}
                       </span>
 
-                      <h3>{detail}</h3>
+                      <h3>
+                        {detail}
+                      </h3>
 
                       <p>
                         현장 구조와 철거 범위를
@@ -458,13 +476,14 @@ export default async function ServicePage({
                     <div className="card-body">
                       <span className="section-tag">
                         CHECK{" "}
-                        {String(index + 1).padStart(
-                          2,
-                          "0"
-                        )}
+                        {String(
+                          index + 1
+                        ).padStart(2, "0")}
                       </span>
 
-                      <h3>{check}</h3>
+                      <h3>
+                        {check}
+                      </h3>
                     </div>
                   </div>
                 )
@@ -521,21 +540,12 @@ export default async function ServicePage({
             </p>
 
             <div className="contact-actions">
-              {PHONE ? (
-                <a
-                  href={`tel:${PHONE}`}
-                  className="btn btn-primary"
-                >
-                  전화 상담 {PHONE_DISPLAY}
-                </a>
-              ) : (
-                <Link
-                  href="/#contact"
-                  className="btn btn-primary"
-                >
-                  견적 상담 안내
-                </Link>
-              )}
+              <a
+                href={PHONE_LINK}
+                className="btn btn-primary"
+              >
+                전화 상담 {PHONE_DISPLAY}
+              </a>
 
               <Link
                 href="/"
@@ -555,7 +565,9 @@ export default async function ServicePage({
       <footer className="site-footer">
         <div className="container footer-inner">
           <div>
-            <h3>{COMPANY}</h3>
+            <h3>
+              {COMPANY}
+            </h3>
 
             <div className="footer-info">
               <p>
@@ -567,11 +579,9 @@ export default async function ServicePage({
                 그 외 지역 문의
               </p>
 
-              {PHONE && (
-                <p>
-                  전화: {PHONE_DISPLAY}
-                </p>
-              )}
+              <p>
+                전화: {PHONE_DISPLAY}
+              </p>
             </div>
           </div>
 
@@ -581,7 +591,9 @@ export default async function ServicePage({
               {COMPANY}.
             </p>
 
-            <p>All rights reserved.</p>
+            <p>
+              All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
