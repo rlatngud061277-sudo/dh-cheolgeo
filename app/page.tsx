@@ -1,40 +1,43 @@
 
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 /* =====================================
-   DH 종합철거 기본 정보
+   DH 종합철거 기본 설정
 ===================================== */
 
-const SITE_URL =
-  "https://www.dhcheolgeo.com";
+const SITE_URL = "https://www.dhcheolgeo.com";
 
 const COMPANY = "DH 종합철거";
-
 const OWNER = "이덕재";
-
 const PHONE = "01054731244";
-
 const PHONE_DISPLAY = "010-5473-1244";
-
 const PHONE_LINK = `tel:${PHONE}`;
 
+const LOGO = "/IMG_1102.png";
+
 /* =====================================
-   메인 홈페이지 SEO 설정
+   메인 홈페이지 SEO
 ===================================== */
 
 export const metadata: Metadata = {
   title: {
     absolute:
-      "DH 종합철거 | 서울·경기·인천·충남·충북 철거업체",
+      "DH 종합철거 | 철거업체·상가철거·내부철거·원상복구",
   },
 
   description:
-    "DH 종합철거 공식 홈페이지. 주택·아파트 철거, 상가 철거, 사무실 철거, 내부 철거 및 원상복구 상담을 안내합니다. 서울·경기·인천·충남·충북 지역 철거 문의.",
+    "DH 종합철거 공식 홈페이지. 주택·아파트 철거, 상가철거, 사무실철거, 내부철거 및 원상복구 상담. 철거 전후 사진과 작업 안내, 지역별 철거 상담 정보를 확인하세요.",
 
   alternates: {
     canonical: SITE_URL,
+  },
+
+  robots: {
+    index: true,
+    follow: true,
   },
 
   openGraph: {
@@ -42,88 +45,127 @@ export const metadata: Metadata = {
     locale: "ko_KR",
     siteName: COMPANY,
     url: SITE_URL,
-
     title:
-      "DH 종합철거 | 철거 전문업체",
-
+      "DH 종합철거 | 철거공사·상가철거·원상복구",
     description:
-      "주택·아파트·상가·사무실 철거 및 원상복구 상담. 서울·경기·인천·충남·충북 지역 철거 문의.",
+      "주택·아파트·상가·사무실 철거 및 원상복구 상담. 철거 현장 사진과 서비스 안내.",
+    images: [
+      {
+        url: LOGO,
+        alt: "DH 종합철거 공식 로고",
+      },
+    ],
   },
 };
 
 /* =====================================
-   철거 서비스 목록
+   시공 사진 설정
+===================================== */
+
+const IMAGES = {
+  apartmentBefore: "/IMG_2380.jpeg",
+  apartmentAfter: "/IMG_2381.jpeg",
+
+  commercialBefore: "/IMG_2383.jpeg",
+  commercialAfter: "/IMG_2382.jpeg",
+
+  interior: "/IMG_2384.jpeg",
+  office: "/IMG_2385.jpeg",
+  kitchen: "/IMG_2386.jpeg",
+};
+
+/* =====================================
+   철거 서비스 카테고리
 ===================================== */
 
 const SERVICES = [
   {
     title: "주택·아파트 철거",
-
-    desc:
-      "주택과 아파트 내부 철거 및 리모델링 전 철거 작업을 상담합니다.",
-
     slug: "house",
-
+    image: IMAGES.apartmentAfter,
+    imageAlt: "아파트 주방 및 내부 시설물 철거 현장",
+    desc:
+      "아파트 리모델링 전 주방, 바닥, 벽체, 천장 및 기존 시설물의 철거 범위를 확인합니다. 주택과 공동주택의 현장 조건에 맞춰 철거 작업을 상담합니다.",
     icon: "🏠",
   },
-
   {
     title: "상가·매장 철거",
-
-    desc:
-      "상가 및 매장의 내부 시설물 철거와 공간 정리 작업을 안내합니다.",
-
     slug: "commercial",
-
+    image: IMAGES.kitchen,
+    imageAlt: "상가 주방 내부 시설물 철거 현장",
+    desc:
+      "음식점, 카페, 매장 등 상업시설의 기존 인테리어와 주방 설비, 바닥, 천장 및 내부 시설물 철거를 상담합니다.",
     icon: "🏢",
   },
-
   {
     title: "사무실 철거",
-
-    desc:
-      "사무실 내부 칸막이와 기존 시설물 철거 등 현장 상황에 맞는 작업을 상담합니다.",
-
     slug: "office",
-
+    image: IMAGES.office,
+    imageAlt: "사무실 천장과 내부 마감재 철거 현장",
+    desc:
+      "사무실 이전이나 리모델링을 위한 칸막이, 천장 마감재, 바닥재 및 기존 시설물 철거 범위를 확인합니다.",
     icon: "🏬",
   },
-
   {
     title: "내부·부분 철거",
-
-    desc:
-      "벽체, 바닥, 천장 등 현장에 필요한 부분 철거 작업을 안내합니다.",
-
     slug: "interior",
-
+    image: IMAGES.interior,
+    imageAlt: "상업시설 내부 천장 및 마감재 철거 현장",
+    desc:
+      "벽체, 바닥, 천장, 주방 등 필요한 공간의 부분 철거를 상담합니다. 유지할 시설물과 철거할 부분을 구분하여 작업 범위를 확인합니다.",
     icon: "🔨",
   },
-
   {
     title: "원상복구",
-
-    desc:
-      "상가와 사무실의 계약 종료 및 이전에 따른 원상복구 작업을 상담합니다.",
-
     slug: "restoration",
-
+    image: IMAGES.commercialAfter,
+    imageAlt: "상업시설 내부 철거 및 정리 현장",
+    desc:
+      "상가와 사무실의 임대차 종료에 따른 기존 시설물 철거 및 원상복구 작업을 상담합니다. 계약서상 복구 기준과 현장 상태를 확인합니다.",
     icon: "🛠️",
   },
 ];
 
 /* =====================================
-   서울·경기·인천·충남·충북 지역 목록
+   Before & After 사진
+===================================== */
 
-   기존 지역별 철거 페이지 주소 유지
+const BEFORE_AFTER = [
+  {
+    id: "apartment",
+    title: "아파트 주방 철거",
+    description:
+      "주방 가구와 기존 시설물 철거 전후 공간을 비교할 수 있는 사진입니다.",
+    before: IMAGES.apartmentBefore,
+    after: IMAGES.apartmentAfter,
+    beforeAlt:
+      "아파트 주방 가구 및 기존 시설물이 있는 철거 전 모습",
+    afterAlt:
+      "아파트 주방 가구와 시설물이 철거된 후 모습",
+  },
+  {
+    id: "commercial",
+    title: "상업시설 내부 철거",
+    description:
+      "상업시설의 기존 인테리어와 내부 시설물 철거 전후 공간을 비교할 수 있는 사진입니다.",
+    before: IMAGES.commercialBefore,
+    after: IMAGES.commercialAfter,
+    beforeAlt:
+      "상업시설 기존 인테리어와 내부 시설물이 있는 철거 전 모습",
+    afterAlt:
+      "상업시설 내부 마감재 및 시설물이 철거된 후 모습",
+  },
+];
+
+/* =====================================
+   출장 지역
+   기존 URL 유지
 ===================================== */
 
 const REGIONS = [
   {
     name: "서울특별시",
-
     slug: "seoul",
-
     districts: [
       ["강남구", "gangnam"],
       ["강동구", "gangdong"],
@@ -152,12 +194,9 @@ const REGIONS = [
       ["중랑구", "jungnang"],
     ],
   },
-
   {
     name: "경기도",
-
     slug: "gyeonggi",
-
     districts: [
       ["수원시", "suwon"],
       ["성남시", "seongnam"],
@@ -192,12 +231,9 @@ const REGIONS = [
       ["연천군", "yeoncheon"],
     ],
   },
-
   {
     name: "인천광역시",
-
     slug: "incheon",
-
     districts: [
       ["중구", "jung"],
       ["동구", "dong"],
@@ -211,12 +247,9 @@ const REGIONS = [
       ["옹진군", "ongjin"],
     ],
   },
-
   {
     name: "충청남도",
-
     slug: "chungnam",
-
     districts: [
       ["천안시", "cheonan"],
       ["아산시", "asan"],
@@ -235,12 +268,9 @@ const REGIONS = [
       ["태안군", "taean"],
     ],
   },
-
   {
     name: "충청북도",
-
     slug: "chungbuk",
-
     districts: [
       ["청주시", "cheongju"],
       ["충주시", "chungju"],
@@ -258,36 +288,29 @@ const REGIONS = [
 ];
 
 /* =====================================
-   견적 상담 안내
+   견적 상담 단계
 ===================================== */
 
 const ESTIMATE_STEPS = [
   {
     title: "01. 현장 위치",
-
     desc:
-      "철거 현장의 지역과 주소를 알려주세요.",
+      "철거 현장의 주소와 건물 유형을 알려주세요.",
   },
-
   {
     title: "02. 철거 범위",
-
     desc:
-      "철거할 공간과 작업 범위를 알려주세요.",
+      "철거할 공간의 면적과 철거 대상 시설물을 알려주세요.",
   },
-
   {
     title: "03. 현장 사진",
-
     desc:
-      "현장 사진과 작업 희망 날짜를 준비해 주세요.",
+      "철거 대상이 보이는 사진과 작업 희망 날짜를 준비해 주세요.",
   },
 ];
 
 /* =====================================
-   모바일 레이아웃 보강
-
-   기존 globals.css와 함께 적용
+   공통 스타일
 ===================================== */
 
 const fullWidthStyle: CSSProperties = {
@@ -312,18 +335,29 @@ const cardBodyStyle: CSSProperties = {
   textAlign: "left",
 };
 
+const imageWrapStyle: CSSProperties = {
+  position: "relative",
+  width: "100%",
+  height: 230,
+  overflow: "hidden",
+  background: "#eeeeee",
+};
+
+const imageStyle: CSSProperties = {
+  objectFit: "cover",
+};
+
 const cardTitleStyle: CSSProperties = {
-  ...fullWidthStyle,
+  width: "100%",
   wordBreak: "keep-all",
   overflowWrap: "break-word",
-  whiteSpace: "normal",
 };
 
 const cardTextStyle: CSSProperties = {
-  ...fullWidthStyle,
+  width: "100%",
   wordBreak: "keep-all",
   overflowWrap: "break-word",
-  whiteSpace: "normal",
+  lineHeight: 1.8,
 };
 
 /* =====================================
@@ -331,24 +365,15 @@ const cardTextStyle: CSSProperties = {
 ===================================== */
 
 export default function Home() {
-  /* =====================================
-     업체 구조화 데이터
-  ===================================== */
-
   const businessSchema = {
     "@context": "https://schema.org",
-
     "@type": "Organization",
-
     name: COMPANY,
-
     url: SITE_URL,
-
     telephone: PHONE_DISPLAY,
-
+    logo: `${SITE_URL}${LOGO}`,
     description:
       "주택·아파트·상가·사무실 철거 및 원상복구 상담",
-
     areaServed: [
       "서울특별시",
       "경기도",
@@ -360,10 +385,6 @@ export default function Home() {
 
   return (
     <>
-      {/* =====================================
-          업체 구조화 데이터
-      ===================================== */}
-
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -373,9 +394,7 @@ export default function Home() {
         }}
       />
 
-      {/* =====================================
-          상단 메뉴
-      ===================================== */}
+      {/* 상단 메뉴 */}
 
       <header className="site-header">
         <div className="container header-inner">
@@ -384,10 +403,7 @@ export default function Home() {
             className="brand"
             aria-label="DH 종합철거 메인 홈페이지"
           >
-            <span className="brand-mark">
-              DH
-            </span>
-
+            <span className="brand-mark">DH</span>
             종합철거
           </Link>
 
@@ -395,25 +411,16 @@ export default function Home() {
             className="nav-links"
             aria-label="주요 메뉴"
           >
-            <a href="#services">
-              철거 서비스
-            </a>
-
-            <a href="#regions">
-              출장 지역
-            </a>
-
-            <a href="#contact">
-              견적 문의
-            </a>
+            <a href="#services">철거 서비스</a>
+            <a href="#before-after">철거 전후</a>
+            <a href="#regions">출장 지역</a>
+            <a href="#contact">견적 문의</a>
           </nav>
         </div>
       </header>
 
       <main>
-        {/* =====================================
-            메인 대표 화면
-        ===================================== */}
+        {/* 메인 대표 화면 */}
 
         <section className="hero">
           <div className="container hero-inner">
@@ -425,10 +432,7 @@ export default function Home() {
               <h1>
                 주택부터 상가까지
                 <br />
-
-                <strong>
-                  DH 종합철거
-                </strong>
+                <strong>DH 종합철거</strong>
               </h1>
 
               <p>
@@ -439,7 +443,6 @@ export default function Home() {
               <p>
                 서울·경기·인천·충남·충북
                 <br />
-
                 그 외 지역 문의
               </p>
 
@@ -447,7 +450,7 @@ export default function Home() {
                 <a
                   href={PHONE_LINK}
                   className="btn btn-primary"
-                  aria-label={`DH 종합철거 전화 상담 ${PHONE_DISPLAY}`}
+                  aria-label={`전화 상담 ${PHONE_DISPLAY}`}
                 >
                   전화 상담 {PHONE_DISPLAY}
                 </a>
@@ -461,79 +464,37 @@ export default function Home() {
               </div>
             </div>
 
-            {/* =====================================
-                대표 로고 영역
-            ===================================== */}
-
             <div
               className="hero-image"
               style={fullWidthStyle}
             >
               <div
                 style={{
-                  minHeight: 300,
+                  position: "relative",
                   width: "100%",
-                  minWidth: 0,
-
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-
-                  padding: 24,
-                  textAlign: "center",
-
-                  background:
-                    "linear-gradient(135deg, #242424, #111111)",
-
+                  minHeight: 300,
+                  aspectRatio: "4 / 3",
+                  overflow: "hidden",
+                  background: "#111111",
                   border: "1px solid #444",
                 }}
               >
-                <span
+                <Image
+                  src={LOGO}
+                  alt="DH 종합철거 공식 로고"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   style={{
-                    fontSize: 72,
-                    fontWeight: 900,
-                    color: "#ff7900",
-                    lineHeight: 1,
+                    objectFit: "contain",
                   }}
-                >
-                  DH
-                </span>
-
-                <span
-                  style={{
-                    marginTop: 14,
-                    fontSize: 26,
-                    fontWeight: 900,
-                    color: "#ffffff",
-
-                    wordBreak: "keep-all",
-                  }}
-                >
-                  종합철거
-                </span>
-
-                <span
-                  style={{
-                    marginTop: 10,
-                    color: "#dddddd",
-                    fontSize: 12,
-                    letterSpacing: 2,
-
-                    maxWidth: "100%",
-                    overflowWrap: "break-word",
-                  }}
-                >
-                  DEMOLITION & REMOVAL
-                </span>
+                />
               </div>
             </div>
           </div>
         </section>
 
-        {/* =====================================
-            철거 서비스
-        ===================================== */}
+        {/* 철거 서비스 */}
 
         <section
           id="services"
@@ -551,8 +512,8 @@ export default function Home() {
               </h2>
 
               <p>
-                현장 상황과 철거 범위를 확인하여
-                필요한 작업을 상담합니다.
+                주거공간과 상업시설의
+                철거 목적에 맞춰 작업 범위를 상담합니다.
               </p>
             </div>
 
@@ -566,22 +527,14 @@ export default function Home() {
                   className="card"
                   style={cardStyle}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-
-                      width: "100%",
-                      minWidth: 0,
-                      minHeight: 150,
-
-                      background: "#f6f7f9",
-                      fontSize: 52,
-                    }}
-                    aria-hidden="true"
-                  >
-                    {service.icon}
+                  <div style={imageWrapStyle}>
+                    <Image
+                      src={service.image}
+                      alt={service.imageAlt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      style={imageStyle}
+                    />
                   </div>
 
                   <div
@@ -600,11 +553,10 @@ export default function Home() {
                       href={`/services/${service.slug}`}
                       className="card-link"
                       style={{
+                        marginTop: "auto",
                         display: "inline-block",
                         maxWidth: "100%",
-
                         wordBreak: "keep-all",
-                        overflowWrap: "break-word",
                       }}
                     >
                       자세히 보기 →
@@ -616,12 +568,169 @@ export default function Home() {
           </div>
         </section>
 
-        {/* =====================================
-            철거 견적 상담 안내
-        ===================================== */}
+        {/* 철거 전후 비교 */}
 
         <section
+          id="before-after"
           className="section section-alt"
+          aria-labelledby="before-after-heading"
+        >
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-tag">
+                BEFORE & AFTER
+              </span>
+
+              <h2 id="before-after-heading">
+                철거 전후 비교 사진
+              </h2>
+
+              <p>
+                기존 시설물 철거 전과
+                철거 후 공간의 변화를 확인하세요.
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gap: 34,
+                width: "100%",
+              }}
+            >
+              {BEFORE_AFTER.map((item) => (
+                <article
+                  key={item.id}
+                  className="card"
+                  style={{
+                    overflow: "hidden",
+                    width: "100%",
+                    minWidth: 0,
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: "24px 24px 8px",
+                    }}
+                  >
+                    <h3
+                      style={{
+                        marginBottom: 10,
+                        wordBreak: "keep-all",
+                      }}
+                    >
+                      {item.title}
+                    </h3>
+
+                    <p
+                      style={{
+                        lineHeight: 1.8,
+                        wordBreak: "keep-all",
+                      }}
+                    >
+                      {item.description}
+                    </p>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(min(100%, 260px), 1fr))",
+                      gap: 16,
+                      padding: 16,
+                    }}
+                  >
+                    <div style={{ minWidth: 0 }}>
+                      <div
+                        style={{
+                          position: "relative",
+                          width: "100%",
+                          aspectRatio: "4 / 3",
+                          overflow: "hidden",
+                          background: "#eeeeee",
+                          borderRadius: 8,
+                        }}
+                      >
+                        <Image
+                          src={item.before}
+                          alt={item.beforeAlt}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          style={{
+                            objectFit: "cover",
+                          }}
+                        />
+
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: 12,
+                            left: 12,
+                            zIndex: 2,
+                            background: "#202020",
+                            color: "#ffffff",
+                            padding: "8px 14px",
+                            borderRadius: 5,
+                            fontSize: 13,
+                            fontWeight: 800,
+                          }}
+                        >
+                          철거 전 BEFORE
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ minWidth: 0 }}>
+                      <div
+                        style={{
+                          position: "relative",
+                          width: "100%",
+                          aspectRatio: "4 / 3",
+                          overflow: "hidden",
+                          background: "#eeeeee",
+                          borderRadius: 8,
+                        }}
+                      >
+                        <Image
+                          src={item.after}
+                          alt={item.afterAlt}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          style={{
+                            objectFit: "cover",
+                          }}
+                        />
+
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: 12,
+                            left: 12,
+                            zIndex: 2,
+                            background: "#ff7900",
+                            color: "#ffffff",
+                            padding: "8px 14px",
+                            borderRadius: 5,
+                            fontSize: 13,
+                            fontWeight: 800,
+                          }}
+                        >
+                          철거 후 AFTER
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 견적 상담 안내 */}
+
+        <section
+          className="section"
           aria-labelledby="estimate-heading"
         >
           <div className="container">
@@ -635,7 +744,7 @@ export default function Home() {
               </h2>
 
               <p>
-                현장 조건에 따라 작업 방법과
+                철거 면적, 작업 범위, 현장 조건에 따라
                 견적이 달라질 수 있습니다.
               </p>
             </div>
@@ -668,13 +777,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* =====================================
-            지역별 철거 상담
-        ===================================== */}
+        {/* 지역별 철거 상담 */}
 
         <section
           id="regions"
-          className="section"
+          className="section section-alt"
           aria-labelledby="regions-heading"
         >
           <div className="container">
@@ -690,7 +797,6 @@ export default function Home() {
               <p>
                 서울·경기·인천·충남·충북
                 <br />
-
                 그 외 지역 문의
               </p>
             </div>
@@ -726,10 +832,8 @@ export default function Home() {
                         style={{
                           minWidth: 0,
                           maxWidth: "100%",
-
                           wordBreak: "keep-all",
                           overflowWrap: "break-word",
-
                           textAlign: "center",
                         }}
                       >
@@ -743,9 +847,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* =====================================
-            최종 상담 문의
-        ===================================== */}
+        {/* 최종 견적 문의 */}
 
         <section
           id="contact"
@@ -759,7 +861,7 @@ export default function Home() {
 
             <p>
               철거 현장의 위치, 작업 범위,
-              현장 사진 등을 준비해 주시면
+              현장 사진과 희망 일정을 준비해 주시면
               상담에 도움이 됩니다.
             </p>
 
@@ -767,7 +869,6 @@ export default function Home() {
               <a
                 href={PHONE_LINK}
                 className="btn btn-primary"
-                aria-label={`DH 종합철거 전화 상담 ${PHONE_DISPLAY}`}
               >
                 전화 상담 {PHONE_DISPLAY}
               </a>
@@ -783,9 +884,7 @@ export default function Home() {
         </section>
       </main>
 
-      {/* =====================================
-          하단 업체 정보
-      ===================================== */}
+      {/* 하단 업체 정보 */}
 
       <footer className="site-footer">
         <div className="container footer-inner">
@@ -793,9 +892,7 @@ export default function Home() {
             <h3>{COMPANY}</h3>
 
             <div className="footer-info">
-              <p>
-                대표자: {OWNER}
-              </p>
+              <p>대표자: {OWNER}</p>
 
               <p>
                 주택·아파트·상가·사무실 철거
@@ -822,9 +919,7 @@ export default function Home() {
               {COMPANY}.
             </p>
 
-            <p>
-              All rights reserved.
-            </p>
+            <p>All rights reserved.</p>
           </div>
         </div>
       </footer>
