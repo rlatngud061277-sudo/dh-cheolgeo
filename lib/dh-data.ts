@@ -1,10 +1,18 @@
 
+/* =====================================
+   DH 종합철거 기본 정보
+===================================== */
+
 export const SITE_URL = "https://www.dhcheolgeo.com";
 export const COMPANY = "DH 종합철거";
 export const OWNER = "이덕재";
 export const BUSINESS_NUMBER = "882-06-03153";
 export const PHONE = "01054731244";
 export const PHONE_DISPLAY = "010-5473-1244";
+
+/* =====================================
+   철거 서비스 5개
+===================================== */
 
 export const SERVICES = {
   house: {
@@ -34,6 +42,7 @@ export const SERVICES = {
       },
     ],
   },
+
   commercial: {
     title: "상가·매장 철거",
     shortTitle: "상가 철거",
@@ -61,6 +70,7 @@ export const SERVICES = {
       },
     ],
   },
+
   office: {
     title: "사무실 철거",
     shortTitle: "사무실 철거",
@@ -88,6 +98,7 @@ export const SERVICES = {
       },
     ],
   },
+
   interior: {
     title: "내부·부분 철거",
     shortTitle: "내부 철거",
@@ -115,6 +126,7 @@ export const SERVICES = {
       },
     ],
   },
+
   restoration: {
     title: "상가·사무실 원상복구",
     shortTitle: "원상복구",
@@ -155,6 +167,10 @@ export function isServiceSlug(
   );
 }
 
+/* =====================================
+   경기·충남·충북 전체 지역
+===================================== */
+
 export const REGIONS = {
   gyeonggi: {
     name: "경기도",
@@ -193,6 +209,7 @@ export const REGIONS = {
       yeoncheon: "연천군",
     },
   },
+
   chungnam: {
     name: "충청남도",
     shortName: "충남",
@@ -200,25 +217,45 @@ export const REGIONS = {
       cheonan: "천안시",
       asan: "아산시",
       gongju: "공주시",
+      boryeong: "보령시",
+      seosan: "서산시",
+      nonsan: "논산시",
+      gyeryong: "계룡시",
       dangjin: "당진시",
-      yesan: "예산군",
-      hongseong: "홍성군",
+      geumsan: "금산군",
+      buyeo: "부여군",
+      seocheon: "서천군",
       cheongyang: "청양군",
+      hongseong: "홍성군",
+      yesan: "예산군",
+      tae안: "태안군",
     },
   },
+
   chungbuk: {
     name: "충청북도",
     shortName: "충북",
     districts: {
       cheongju: "청주시",
-      jincheon: "진천군",
+      chungju: "충주시",
+      jecheon: "제천시",
+      boeun: "보은군",
+      okcheon: "옥천군",
+      yeongdong: "영동군",
       jeungpyeong: "증평군",
+      jincheon: "진천군",
+      goesan: "괴산군",
       eumseong: "음성군",
+      danyang: "단양군",
     },
   },
 } as const;
 
 export type RegionSlug = keyof typeof REGIONS;
+
+/* =====================================
+   지역 조회
+===================================== */
 
 export function getLocation(
   regionSlug: string,
@@ -234,6 +271,7 @@ export function getLocation(
   }
 
   const region = REGIONS[regionSlug as RegionSlug];
+
   const districts: Record<string, string> =
     region.districts;
 
@@ -248,6 +286,10 @@ export function getLocation(
   };
 }
 
+/* =====================================
+   전체 지역 목록
+===================================== */
+
 export function getAllLocations() {
   return Object.entries(REGIONS).flatMap(
     ([region, data]) =>
@@ -257,6 +299,10 @@ export function getAllLocations() {
       }))
   );
 }
+
+/* =====================================
+   서비스별 지역 URL
+===================================== */
 
 export function serviceRegionUrl(
   service: string,
