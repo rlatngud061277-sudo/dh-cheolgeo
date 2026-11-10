@@ -1,21 +1,27 @@
 
 import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
 import "./globals.css";
 
-const SITE_URL = "https://dhcheolgeo.com";
+const SITE_URL = "https://www.dhcheolgeo.com";
 const SITE_NAME = "DH 종합철거";
 const FAVICON = "/IMG_1102.png";
+
+const SITE_TITLE =
+  "DH 종합철거 | 경기·충남·충북 철거업체";
+
+const SITE_DESCRIPTION =
+  "경기·충남·충북 철거 전문 DH 종합철거. 주택·아파트·상가·사무실 철거, 내부철거 및 원상복구 상담.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 
   title: {
-    default: "DH 종합철거 | 철거공사·상가철거·원상복구",
+    default: SITE_TITLE,
     template: "%s | DH 종합철거",
   },
 
-  description:
-    "DH 종합철거는 상가철거, 내부철거, 원상복구 등 다양한 철거공사를 상담합니다. 현장 상황에 맞춘 철거 작업 범위와 견적을 안내합니다.",
+  description: SITE_DESCRIPTION,
 
   applicationName: SITE_NAME,
 
@@ -44,25 +50,30 @@ export const metadata: Metadata = {
     locale: "ko_KR",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "DH 종합철거 | 철거공사·상가철거·원상복구",
+    title:
+      "DH 종합철거 | 경기·충남·충북 철거 전문업체",
     description:
-      "상가철거, 내부철거, 원상복구 등 철거공사 상담. DH 종합철거에서 현장 상황에 맞는 작업을 안내합니다.",
+      "경기·충남·충북 전 지역 주택·아파트·상가·사무실 철거 및 원상복구 상담.",
     images: [
       {
-        url: FAVICON,
-        width: 1200,
-        height: 1200,
+        url: `${SITE_URL}${FAVICON}`,
         alt: "DH 종합철거 공식 로고",
       },
     ],
   },
 
   twitter: {
-    card: "summary_large_image",
-    title: "DH 종합철거",
-    description: "철거공사·상가철거·내부철거·원상복구",
-    images: [FAVICON],
+    card: "summary",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [`${SITE_URL}${FAVICON}`],
   },
+
+  alternates: {
+    canonical: SITE_URL,
+  },
+
+  category: "철거공사",
 };
 
 export const viewport: Viewport = {
@@ -73,7 +84,7 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="ko">
