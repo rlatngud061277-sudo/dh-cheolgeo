@@ -30,6 +30,7 @@ type Props = {
 };
 
 /* =====================================
+   정적 지역페이지 생성
    5개 서비스 × 57개 지역 = 285개
 ===================================== */
 
@@ -49,9 +50,14 @@ export const dynamicParams = false;
    서비스별 견적 안내
 ===================================== */
 
+type EstimateGuide = {
+  title: string;
+  text: string;
+};
+
 const ESTIMATE_GUIDES: Record<
   ServiceSlug,
-  { title: string; text: string }[]
+  EstimateGuide[]
 > = {
   house: [
     {
@@ -71,6 +77,7 @@ const ESTIMATE_GUIDES: Record<
       text: "철거할 공간 전체와 주요 시설물 사진",
     },
   ],
+
   commercial: [
     {
       title: "매장 업종",
@@ -89,6 +96,7 @@ const ESTIMATE_GUIDES: Record<
       text: "폐업일, 퇴거일, 건물 작업 가능 시간",
     },
   ],
+
   office: [
     {
       title: "사무실 면적",
@@ -107,6 +115,7 @@ const ESTIMATE_GUIDES: Record<
       text: "사무실 이전일과 철거 완료 희망일",
     },
   ],
+
   interior: [
     {
       title: "부분철거 위치",
@@ -125,6 +134,7 @@ const ESTIMATE_GUIDES: Record<
       text: "철거 대상과 주변 구조가 보이는 사진",
     },
   ],
+
   restoration: [
     {
       title: "계약 조건",
@@ -162,7 +172,10 @@ function getSeo(
     `${locationName} ${item.title} 상담. ` +
     "철거 범위, 현장 조건, 비용 견적 및 작업 일정 안내.";
 
-  return { title, description };
+  return {
+    title,
+    description,
+  };
 }
 
 export async function generateMetadata({
@@ -182,6 +195,7 @@ export async function generateMetadata({
   }
 
   const item = SERVICES[service];
+
   const { title, description } = getSeo(
     service,
     location.fullName
@@ -195,14 +209,18 @@ export async function generateMetadata({
     title: {
       absolute: title,
     },
+
     description,
+
     alternates: {
       canonical: url,
     },
+
     robots: {
       index: true,
       follow: true,
     },
+
     openGraph: {
       type: "website",
       locale: "ko_KR",
@@ -217,6 +235,7 @@ export async function generateMetadata({
         },
       ],
     },
+
     twitter: {
       card: "summary_large_image",
       title,
@@ -262,7 +281,7 @@ function Photo({
 }
 
 /* =====================================
-   지역별 서비스 페이지
+   지역별 서비스 개별페이지
 ===================================== */
 
 export default async function RegionServicePage({
@@ -343,6 +362,10 @@ export default async function RegionServicePage({
     },
   ];
 
+  /* =====================================
+     FAQ
+  ===================================== */
+
   const faqs = [
     {
       question:
@@ -372,6 +395,8 @@ export default async function RegionServicePage({
 
   return (
     <>
+      {/* 구조화 데이터 */}
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -382,7 +407,9 @@ export default async function RegionServicePage({
         }}
       />
 
-      {/* 상단 메뉴 */}
+      {/* =====================================
+          상단 메뉴
+      ===================================== */}
 
       <header className="site-header">
         <div className="container header-inner">
@@ -405,7 +432,9 @@ export default async function RegionServicePage({
       </header>
 
       <main>
-        {/* 메인 소개 */}
+        {/* =====================================
+            메인 소개
+        ===================================== */}
 
         <section className="hero">
           <div className="container">
@@ -425,9 +454,7 @@ export default async function RegionServicePage({
               철거 범위를 먼저 확인해 주세요.
             </p>
 
-            <p>
-              {item.description}
-            </p>
+            <p>{item.description}</p>
 
             <div className="hero-actions">
               <a
@@ -447,7 +474,9 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 서비스 작업 안내 */}
+        {/* =====================================
+            서비스 작업 안내
+        ===================================== */}
 
         <section className="section">
           <div className="container">
@@ -507,7 +536,9 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 철거 전후 사진 */}
+        {/* =====================================
+            철거 전후 사진
+        ===================================== */}
 
         {item.before && item.after && (
           <section className="section section-alt">
@@ -535,6 +566,7 @@ export default async function RegionServicePage({
               >
                 <div>
                   <h3>철거 전</h3>
+
                   <Photo
                     src={item.before}
                     alt={`${item.title} 철거 전 참고 사진`}
@@ -543,6 +575,7 @@ export default async function RegionServicePage({
 
                 <div>
                   <h3>철거 후</h3>
+
                   <Photo
                     src={item.after}
                     alt={`${item.title} 철거 후 참고 사진`}
@@ -553,7 +586,9 @@ export default async function RegionServicePage({
           </section>
         )}
 
-        {/* 견적 안내 */}
+        {/* =====================================
+            견적 안내
+        ===================================== */}
 
         <section
           id="estimate"
@@ -592,7 +627,9 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* FAQ */}
+        {/* =====================================
+            자주 묻는 질문
+        ===================================== */}
 
         <section className="section section-alt">
           <div className="container">
@@ -639,7 +676,9 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 상담 */}
+        {/* =====================================
+            전화 상담
+        ===================================== */}
 
         <section
           id="contact"
@@ -675,7 +714,9 @@ export default async function RegionServicePage({
         </section>
       </main>
 
-      {/* 하단 정보 */}
+      {/* =====================================
+          하단 업체 정보
+      ===================================== */}
 
       <footer className="site-footer">
         <div className="container footer-inner">
@@ -707,7 +748,8 @@ export default async function RegionServicePage({
               © {new Date().getFullYear()} {COMPANY}.
             </p>
           </div>
-        </footer>
+        </div>
+      </footer>
     </>
   );
 }
