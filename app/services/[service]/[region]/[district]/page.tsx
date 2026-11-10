@@ -12,11 +12,11 @@ import {
   PHONE,
   PHONE_DISPLAY,
   SERVICES,
-  REGIONS,
   getLocation,
   getAllLocations,
   isServiceSlug,
   serviceRegionUrl,
+  type ServiceSlug,
 } from "../../../../../lib/dh-data";
 
 type Params = {
@@ -30,15 +30,15 @@ type Props = {
 };
 
 /* =====================================
-   5개 서비스 × 42개 지역
+   5개 서비스 × 57개 지역 = 285개
 ===================================== */
 
 export function generateStaticParams() {
   return Object.keys(SERVICES).flatMap((service) =>
-    getAllLocations().map((location) => ({
+    getAllLocations().map(({ region, district }) => ({
       service,
-      region: location.region,
-      district: location.district,
+      region,
+      district,
     }))
   );
 }
@@ -46,37 +46,159 @@ export function generateStaticParams() {
 export const dynamicParams = false;
 
 /* =====================================
-   지역 + 서비스 SEO
+   서비스별 견적 안내
 ===================================== */
+
+const ESTIMATE_GUIDES: Record<
+  ServiceSlug,
+  { title: string; text: string }[]
+> = {
+  house: [
+    {
+      title: "주택 유형",
+      text: "아파트, 빌라, 단독주택 등 건물 유형과 층수",
+    },
+    {
+      title: "철거 범위",
+      text: "주방, 욕실, 바닥, 천장 등 철거 대상",
+    },
+    {
+      title: "공사 조건",
+      text: "관리사무소 규정, 엘리베이터, 보양 및 반출 조건",
+    },
+    {
+      title: "현장 사진",
+      text: "철거할 공간 전체와 주요 시설물 사진",
+    },
+  ],
+  commercial: [
+    {
+      title: "매장 업종",
+      text: "음식점, 카페, 소매점 등 기존 영업 형태",
+    },
+    {
+      title: "철거 범위",
+      text: "천장, 바닥, 칸막이, 주방 시설 및 덕트",
+    },
+    {
+      title: "임대차 조건",
+      text: "임대인이 요구하는 철거 및 원상복구 범위",
+    },
+    {
+      title: "작업 일정",
+      text: "폐업일, 퇴거일, 건물 작업 가능 시간",
+    },
+  ],
+  office: [
+    {
+      title: "사무실 면적",
+      text: "대략적인 면적과 층수, 엘리베이터 유무",
+    },
+    {
+      title: "철거 대상",
+      text: "파티션, 칸막이, 바닥재, 천장재 등",
+    },
+    {
+      title: "유지 설비",
+      text: "철거하지 않을 전기·통신·공조 시설",
+    },
+    {
+      title: "이전 일정",
+      text: "사무실 이전일과 철거 완료 희망일",
+    },
+  ],
+  interior: [
+    {
+      title: "부분철거 위치",
+      text: "벽체, 바닥, 천장 등 작업이 필요한 위치",
+    },
+    {
+      title: "철거 범위",
+      text: "전체 철거인지 일부 마감재 철거인지 구분",
+    },
+    {
+      title: "유지 시설",
+      text: "보호해야 할 설비와 주변 마감재",
+    },
+    {
+      title: "현장 사진",
+      text: "철거 대상과 주변 구조가 보이는 사진",
+    },
+  ],
+  restoration: [
+    {
+      title: "계약 조건",
+      text: "임대차계약서상 원상복구 범위와 협의사항",
+    },
+    {
+      title: "기존 시설",
+      text: "철거 대상 인테리어와 유지해야 할 설비",
+    },
+    {
+      title: "현장 규모",
+      text: "매장 또는 사무실 면적과 건물 조건",
+    },
+    {
+      title: "퇴거 일정",
+      text: "계약 종료일과 원상복구 완료 희망일",
+    },
+  ],
+};
+
+/* =====================================
+   SEO 제목과 설명
+===================================== */
+
+function getSeo(
+  service: ServiceSlug,
+  locationName: string
+) {
+  const item = SERVICES[service];
+
+  const title =
+    `${locationName} ${item.shortTitle} | ${COMPANY}`;
+
+  const description =
+    `${locationName} ${item.title} 상담. ` +
+    "철거 범위, 현장 조건, 비용 견적 및 작업 일정 안내.";
+
+  return { title, description };
+}
 
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
-  const { service, region, district } =
-    await params;
+  const { service, region, district } = await params;
 
   const location = getLocation(region, district);
 
   if (!isServiceSlug(service) || !location) {
-    return { robots: { index: false } };
+    return {
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
   }
 
   const item = SERVICES[service];
-  const title =
-    `${location.fullName} ${item.shortTitle} | ${COMPANY}`;
-
-  const description =
-    `${location.fullName} ${item.title} 전문 상담. ` +
-    "철거 범위, 현장 사진 및 견적 문의 안내.";
+  const { title, description } = getSeo(
+    service,
+    location.fullName
+  );
 
   const url =
     SITE_URL +
     serviceRegionUrl(service, region, district);
 
   return {
-    title: { absolute: title },
+    title: {
+      absolute: title,
+    },
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+    },
     robots: {
       index: true,
       follow: true,
@@ -91,12 +213,22 @@ export async function generateMetadata({
       images: [
         {
           url: `${SITE_URL}${item.image}`,
-          alt: `${location.fullName} ${item.title}`,
+          alt: `${item.title} 현장 참고 사진`,
         },
       ],
     },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`${SITE_URL}${item.image}`],
+    },
   };
 }
+
+/* =====================================
+   사진 컴포넌트
+===================================== */
 
 function Photo({
   src,
@@ -113,7 +245,7 @@ function Photo({
         aspectRatio: "16 / 10",
         overflow: "hidden",
         borderRadius: 14,
-        background: "#eee",
+        background: "#eeeeee",
       }}
     >
       <Image
@@ -121,21 +253,22 @@ function Photo({
         alt={alt}
         fill
         sizes="(max-width: 768px) 100vw, 900px"
-        style={{ objectFit: "cover" }}
+        style={{
+          objectFit: "cover",
+        }}
       />
     </div>
   );
 }
 
 /* =====================================
-   지역 전용페이지
+   지역별 서비스 페이지
 ===================================== */
 
 export default async function RegionServicePage({
   params,
 }: Props) {
-  const { service, region, district } =
-    await params;
+  const { service, region, district } = await params;
 
   const location = getLocation(region, district);
 
@@ -144,13 +277,26 @@ export default async function RegionServicePage({
   }
 
   const item = SERVICES[service];
+
   const locationName = location.fullName;
+
   const title =
     `${locationName} ${item.title}`;
 
   const pageUrl =
     SITE_URL +
     serviceRegionUrl(service, region, district);
+
+  const { description } = getSeo(
+    service,
+    locationName
+  );
+
+  const estimateItems = ESTIMATE_GUIDES[service];
+
+  /* =====================================
+     구조화 데이터
+  ===================================== */
 
   const schema = [
     {
@@ -181,7 +327,7 @@ export default async function RegionServicePage({
       "@context": "https://schema.org",
       "@type": "Service",
       name: title,
-      description: item.description,
+      description,
       serviceType: item.shortTitle,
       url: pageUrl,
       provider: {
@@ -197,6 +343,33 @@ export default async function RegionServicePage({
     },
   ];
 
+  const faqs = [
+    {
+      question:
+        `${locationName} ${item.shortTitle} 견적은 어떻게 받나요?`,
+      answer:
+        "현장 주소, 철거 범위, 면적, 사진과 희망 일정을 준비해 전화로 문의해 주세요. 현장 조건을 확인한 뒤 견적을 안내합니다.",
+    },
+    {
+      question:
+        `${item.shortTitle} 비용은 어떻게 결정되나요?`,
+      answer:
+        "작업 면적, 철거 대상, 폐기물 처리량, 장비 접근성, 건물 관리규정과 현장 조건에 따라 달라집니다.",
+    },
+    {
+      question:
+        `${locationName} 출장 작업이 가능한가요?`,
+      answer:
+        "상담 대상 지역에 포함됩니다. 실제 작업 가능 여부는 현장 위치, 작업 범위와 일정에 따라 확인합니다.",
+    },
+    {
+      question:
+        `${item.shortTitle} 작업 전에 무엇을 확인해야 하나요?`,
+      answer:
+        "철거할 시설물과 유지할 설비를 구분하고, 작업 가능 시간과 폐기물 반출 조건을 확인하는 것이 좋습니다.",
+    },
+  ];
+
   return (
     <>
       <script
@@ -209,6 +382,8 @@ export default async function RegionServicePage({
         }}
       />
 
+      {/* 상단 메뉴 */}
+
       <header className="site-header">
         <div className="container header-inner">
           <Link href="/" className="brand">
@@ -218,9 +393,11 @@ export default async function RegionServicePage({
 
           <nav className="nav-links">
             <Link href="/">홈</Link>
+
             <Link href={`/services/${service}`}>
               {item.shortTitle}
             </Link>
+
             <a href="#estimate">견적 안내</a>
             <a href="#contact">전화 상담</a>
           </nav>
@@ -228,7 +405,7 @@ export default async function RegionServicePage({
       </header>
 
       <main>
-        {/* 해당 지역 + 해당 서비스만 표시 */}
+        {/* 메인 소개 */}
 
         <section className="hero">
           <div className="container">
@@ -243,12 +420,13 @@ export default async function RegionServicePage({
             </h1>
 
             <p>
-              {locationName} {item.description}
+              {locationName}에서 {item.title}을
+              알아보고 계신다면 현장 상황과
+              철거 범위를 먼저 확인해 주세요.
             </p>
 
             <p>
-              현장 위치와 철거 범위를 확인하여
-              작업 가능 여부와 견적을 안내합니다.
+              {item.description}
             </p>
 
             <div className="hero-actions">
@@ -269,7 +447,7 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 해당 서비스 사진 */}
+        {/* 서비스 작업 안내 */}
 
         <section className="section">
           <div className="container">
@@ -278,18 +456,20 @@ export default async function RegionServicePage({
                 SERVICE INFORMATION
               </span>
 
-              <h2>{title} 작업 안내</h2>
+              <h2>
+                {locationName} {item.title} 작업 안내
+              </h2>
 
               <p>
-                {locationName}에서 {item.title}을
-                문의할 때 확인해야 하는 작업
-                범위와 현장 조건을 안내합니다.
+                {item.title}을 진행할 때
+                확인해야 할 작업 범위와
+                현장 조건을 안내합니다.
               </p>
             </div>
 
             <Photo
               src={item.image}
-              alt={`${item.title} 관련 철거 현장 사진`}
+              alt={`${item.title} 현장 참고 사진`}
             />
 
             <p
@@ -299,9 +479,9 @@ export default async function RegionServicePage({
                 color: "#666",
               }}
             >
-              서비스 관련 현장 참고 사진입니다.
-              해당 지역에서 촬영한 사진을
-              의미하지는 않습니다.
+              위 사진은 서비스 관련 참고 사진이며,
+              해당 지역에서 촬영한 사진이라는
+              의미는 아닙니다.
             </p>
 
             <div style={{ marginTop: 28 }}>
@@ -318,9 +498,7 @@ export default async function RegionServicePage({
                     {String(index + 1).padStart(2, "0")}
                   </span>
 
-                  <h3>
-                    {locationName} {work.title}
-                  </h3>
+                  <h3>{work.title}</h3>
 
                   <p>{work.text}</p>
                 </article>
@@ -329,7 +507,7 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 같은 서비스의 철거 전후만 표시 */}
+        {/* 철거 전후 사진 */}
 
         {item.before && item.after && (
           <section className="section section-alt">
@@ -342,8 +520,8 @@ export default async function RegionServicePage({
                 <h2>{item.title} 철거 전후</h2>
 
                 <p>
-                  동일 서비스의 참고 현장
-                  전후 사진입니다.
+                  해당 서비스와 관련된
+                  참고 현장의 철거 전후 사진입니다.
                 </p>
               </div>
 
@@ -359,7 +537,7 @@ export default async function RegionServicePage({
                   <h3>철거 전</h3>
                   <Photo
                     src={item.before}
-                    alt={`${item.title} 철거 전`}
+                    alt={`${item.title} 철거 전 참고 사진`}
                   />
                 </div>
 
@@ -367,7 +545,7 @@ export default async function RegionServicePage({
                   <h3>철거 후</h3>
                   <Photo
                     src={item.after}
-                    alt={`${item.title} 철거 후`}
+                    alt={`${item.title} 철거 후 참고 사진`}
                   />
                 </div>
               </div>
@@ -375,7 +553,7 @@ export default async function RegionServicePage({
           </section>
         )}
 
-        {/* 견적 체크리스트 */}
+        {/* 견적 안내 */}
 
         <section
           id="estimate"
@@ -389,51 +567,24 @@ export default async function RegionServicePage({
               </span>
 
               <h2>
-                {locationName} {item.shortTitle}
-                견적 안내
+                {locationName} {item.shortTitle} 견적 안내
               </h2>
 
               <p>
-                정확한 작업 범위 확인을 위해
+                현장에 맞는 견적 상담을 위해
                 아래 정보를 준비해 주세요.
               </p>
             </div>
 
             <div className="card-grid">
-              {[
-                {
-                  title: "현장 위치",
-                  description:
-                    `${locationName} 내 현장 주소와 건물 유형`,
-                },
-                {
-                  title: "철거 범위",
-                  description:
-                    "철거할 시설물과 대략적인 면적",
-                },
-                {
-                  title: "현장 조건",
-                  description:
-                    "주차, 엘리베이터, 작업 가능 시간과 폐기물 반출 조건",
-                },
-                {
-                  title: "현장 사진",
-                  description:
-                    "전체 공간과 철거 대상 시설물 사진",
-                },
-                {
-                  title: "희망 일정",
-                  description:
-                    "작업 희망일과 완료가 필요한 날짜",
-                },
-              ].map((info) => (
+              {estimateItems.map((info) => (
                 <article
                   className="card"
                   key={info.title}
                 >
                   <div className="card-body">
                     <h3>{info.title}</h3>
-                    <p>{info.description}</p>
+                    <p>{info.text}</p>
                   </div>
                 </article>
               ))}
@@ -441,7 +592,7 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 지역 전용 FAQ */}
+        {/* FAQ */}
 
         <section className="section section-alt">
           <div className="container">
@@ -462,83 +613,33 @@ export default async function RegionServicePage({
                 gap: 14,
               }}
             >
-              <details
-                style={{
-                  padding: 20,
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 12,
-                  background: "#fff",
-                }}
-              >
-                <summary
+              {faqs.map((faq) => (
+                <details
+                  key={faq.question}
                   style={{
-                    cursor: "pointer",
-                    fontWeight: 800,
+                    padding: 20,
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 12,
+                    background: "#fff",
                   }}
                 >
-                  {locationName} {item.shortTitle}
-                  견적은 어떻게 문의하나요?
-                </summary>
+                  <summary
+                    style={{
+                      cursor: "pointer",
+                      fontWeight: 800,
+                    }}
+                  >
+                    {faq.question}
+                  </summary>
 
-                <p>
-                  현장 주소, 철거 범위, 면적,
-                  사진과 희망 일정을 준비해
-                  전화로 문의해 주세요.
-                </p>
-              </details>
-
-              <details
-                style={{
-                  padding: 20,
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 12,
-                  background: "#fff",
-                }}
-              >
-                <summary
-                  style={{
-                    cursor: "pointer",
-                    fontWeight: 800,
-                  }}
-                >
-                  철거 비용은 어떻게 결정되나요?
-                </summary>
-
-                <p>
-                  작업 면적, 철거 대상,
-                  폐기물 처리량, 장비 접근성과
-                  현장 조건에 따라 달라집니다.
-                </p>
-              </details>
-
-              <details
-                style={{
-                  padding: 20,
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 12,
-                  background: "#fff",
-                }}
-              >
-                <summary
-                  style={{
-                    cursor: "pointer",
-                    fontWeight: 800,
-                  }}
-                >
-                  {locationName} 출장 작업이 가능한가요?
-                </summary>
-
-                <p>
-                  출장 상담 대상 지역이며
-                  실제 작업 가능 여부는 현장 위치,
-                  작업 범위와 일정에 따라 확인합니다.
-                </p>
-              </details>
+                  <p>{faq.answer}</p>
+                </details>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* 다른 카테고리 연결 없음 */}
+        {/* 상담 */}
 
         <section
           id="contact"
@@ -574,6 +675,8 @@ export default async function RegionServicePage({
         </section>
       </main>
 
+      {/* 하단 정보 */}
+
       <footer className="site-footer">
         <div className="container footer-inner">
           <div>
@@ -581,12 +684,15 @@ export default async function RegionServicePage({
 
             <div className="footer-info">
               <p>대표자: {OWNER}</p>
+
               <p>
                 사업자등록번호: {BUSINESS_NUMBER}
               </p>
+
               <p>
                 {locationName} {item.title} 상담
               </p>
+
               <p>
                 전화:{" "}
                 <a href={`tel:${PHONE}`}>
@@ -598,12 +704,10 @@ export default async function RegionServicePage({
 
           <div className="footer-info">
             <p>
-              © {new Date().getFullYear()}{" "}
-              {COMPANY}.
+              © {new Date().getFullYear()} {COMPANY}.
             </p>
           </div>
-        </div>
-      </footer>
+        </footer>
     </>
   );
 }
