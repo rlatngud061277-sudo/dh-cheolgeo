@@ -3,8 +3,14 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 
+/* =====================================
+   DH 종합철거 기본 정보
+===================================== */
+
 const SITE_URL = "https://www.dhcheolgeo.com";
+
 const SITE_NAME = "DH 종합철거";
+
 const FAVICON = "/IMG_1102.png";
 
 const SITE_TITLE =
@@ -12,6 +18,10 @@ const SITE_TITLE =
 
 const SITE_DESCRIPTION =
   "경기·충남·충북 철거 전문 DH 종합철거. 주택·아파트·상가·사무실 철거, 내부철거 및 원상복구 상담.";
+
+/* =====================================
+   공통 SEO 메타데이터
+===================================== */
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -48,12 +58,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "ko_KR",
-    url: SITE_URL,
     siteName: SITE_NAME,
-    title:
-      "DH 종합철거 | 경기·충남·충북 철거 전문업체",
-    description:
-      "경기·충남·충북 전 지역 주택·아파트·상가·사무실 철거 및 원상복구 상담.",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     images: [
       {
         url: `${SITE_URL}${FAVICON}`,
@@ -69,17 +76,21 @@ export const metadata: Metadata = {
     images: [`${SITE_URL}${FAVICON}`],
   },
 
-  alternates: {
-    canonical: SITE_URL,
-  },
-
   category: "철거공사",
 };
+
+/* =====================================
+   모바일 화면 설정
+===================================== */
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
+
+/* =====================================
+   전체 레이아웃
+===================================== */
 
 export default function RootLayout({
   children,
