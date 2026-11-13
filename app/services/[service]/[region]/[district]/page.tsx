@@ -49,7 +49,7 @@ export const dynamicParams = false;
 /* =====================================
    지역별 사진 설정
 
-   경기: 기존 서비스 사진 유지
+   경기: 기존 서비스별 사진 유지
 
    충남:
    대표 IMG_2386
@@ -59,7 +59,7 @@ export const dynamicParams = false;
    충북:
    대표 IMG_2382
    철거 전 IMG_2382
-   철거 후 IMG_2386
+   철거 후 IMG_2383 (최신 변경)
 ===================================== */
 
 type PhotoSet = {
@@ -86,7 +86,7 @@ function getPhotos(
     return {
       main: "/IMG_2382.jpeg",
       before: "/IMG_2382.jpeg",
-      after: "/IMG_2386.jpeg",
+      after: "/IMG_2383.jpeg",
     };
   }
 
@@ -207,7 +207,7 @@ const ESTIMATE_GUIDES: Record<
 };
 
 /* =====================================
-   SEO 제목과 설명
+   SEO 제목 및 설명
 ===================================== */
 
 function getSeo(
