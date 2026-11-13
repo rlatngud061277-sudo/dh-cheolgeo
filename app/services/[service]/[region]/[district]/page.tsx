@@ -31,6 +31,7 @@ type Props = {
 
 /* =====================================
    정적 지역페이지 생성
+   5개 서비스 × 57개 지역 = 285개
 ===================================== */
 
 export function generateStaticParams() {
@@ -48,17 +49,26 @@ export const dynamicParams = false;
 /* =====================================
    지역별 사진 설정
 
-   경기: 기존 서비스 사진
-   충남: 상가 철거 사진
-   충북: 별도 대표 사진 + 주택 철거 전후
+   경기: 기존 사진 유지
 
-   주의:
-   사진이 모두 같은 현장이라는 의미는 아님
+   충남:
+   대표 IMG_2386
+   전 IMG_2385
+   후 IMG_2384
+
+   충북:
+   대표 서비스별 기존 설정
+   전 IMG_2383
+   후 IMG_2382
 ===================================== */
 
-const CHUNGNAM_PHOTO = "/IMG_2386.jpeg";
+type PhotoSet = {
+  main: string;
+  before: string | null;
+  after: string | null;
+};
 
-const CHUNGBUK_PHOTOS: Record<
+const CHUNGBUK_MAIN_PHOTOS: Record<
   ServiceSlug,
   string
 > = {
@@ -69,12 +79,6 @@ const CHUNGBUK_PHOTOS: Record<
   restoration: "/IMG_2383.jpeg",
 };
 
-type PhotoSet = {
-  main: string;
-  before: string | null;
-  after: string | null;
-};
-
 function getPhotos(
   service: ServiceSlug,
   region: string
@@ -83,17 +87,17 @@ function getPhotos(
 
   if (region === "chungnam") {
     return {
-      main: CHUNGNAM_PHOTO,
-      before: "/IMG_2383.jpeg",
-      after: "/IMG_2382.jpeg",
+      main: "/IMG_2386.jpeg",
+      before: "/IMG_2385.jpeg",
+      after: "/IMG_2384.jpeg",
     };
   }
 
   if (region === "chungbuk") {
     return {
-      main: CHUNGBUK_PHOTOS[service],
-      before: "/IMG_2381.jpeg",
-      after: "/IMG_2380.jpeg",
+      main: CHUNGBUK_MAIN_PHOTOS[service],
+      before: "/IMG_2383.jpeg",
+      after: "/IMG_2382.jpeg",
     };
   }
 
@@ -214,7 +218,7 @@ const ESTIMATE_GUIDES: Record<
 };
 
 /* =====================================
-   SEO
+   SEO 제목 및 설명
 ===================================== */
 
 function getSeo(
@@ -232,6 +236,10 @@ function getSeo(
       "철거 범위, 현장 조건, 비용 견적 및 작업 일정 안내.",
   };
 }
+
+/* =====================================
+   SEO 메타데이터
+===================================== */
 
 export async function generateMetadata({
   params,
@@ -351,7 +359,9 @@ export default async function RegionServicePage({
   }
 
   const item = SERVICES[service];
+
   const locationName = location.fullName;
+
   const title = `${locationName} ${item.title}`;
 
   const pageUrl =
@@ -417,7 +427,7 @@ export default async function RegionServicePage({
   ];
 
   /* =====================================
-     FAQ
+     자주 묻는 질문
   ===================================== */
 
   const faqs = [
@@ -471,6 +481,8 @@ export default async function RegionServicePage({
           </Link>
 
           <nav className="nav-links">
+            <Link href="/">홈</Link>
+
             <Link href={`/services/${service}`}>
               {item.shortTitle}
             </Link>
@@ -582,7 +594,7 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 철거 전후 참고 사진 */}
+        {/* 철거 전후 사진 */}
 
         {photos.before && photos.after && (
           <section className="section section-alt">
@@ -597,7 +609,7 @@ export default async function RegionServicePage({
                 </h2>
 
                 <p>
-                  철거 작업 참고 사진입니다.
+                  철거 작업 전후 참고 사진입니다.
                   해당 지역에서 촬영한 사진이라는
                   의미는 아닙니다.
                 </p>
@@ -638,7 +650,9 @@ export default async function RegionServicePage({
         <section
           id="estimate"
           className="section"
-          style={{ scrollMarginTop: 90 }}
+          style={{
+            scrollMarginTop: 90,
+          }}
         >
           <div className="container">
             <div className="section-heading">
@@ -687,7 +701,12 @@ export default async function RegionServicePage({
               </h2>
             </div>
 
-            <div style={{ display: "grid", gap: 14 }}>
+            <div
+              style={{
+                display: "grid",
+                gap: 14,
+              }}
+            >
               {faqs.map((faq) => (
                 <details
                   key={faq.question}
