@@ -31,7 +31,6 @@ type Props = {
 
 /* =====================================
    정적 지역페이지 생성
-   5개 서비스 × 57개 지역 = 285개
 ===================================== */
 
 export function generateStaticParams() {
@@ -47,11 +46,7 @@ export function generateStaticParams() {
 export const dynamicParams = false;
 
 /* =====================================
-   지역별 대표 사진 설정
-
-   경기: 기존 서비스별 사진 유지
-   충남: 상가 철거 카테고리 사진으로 통일
-   충북: 이전에 지정한 사진 유지
+   지역별 대표 사진
 ===================================== */
 
 const REGION_PHOTOS: Record<
@@ -88,6 +83,35 @@ function getRegionPhoto(
   }
 
   return SERVICES[service].image;
+}
+
+/* =====================================
+   지역별 철거 전후 사진
+
+   충남은 모든 서비스에 상가 철거 전후 적용
+   경기·충북은 기존 설정 유지
+===================================== */
+
+function getBeforeAfter(
+  service: ServiceSlug,
+  region: string
+): {
+  before: string | null;
+  after: string | null;
+} {
+  if (region === "chungnam") {
+    return {
+      before: "/IMG_2383.jpeg",
+      after: "/IMG_2382.jpeg",
+    };
+  }
+
+  const item = SERVICES[service];
+
+  return {
+    before: item.before ?? null,
+    after: item.after ?? null,
+  };
 }
 
 /* =====================================
@@ -200,7 +224,7 @@ const ESTIMATE_GUIDES: Record<
 };
 
 /* =====================================
-   SEO 제목과 설명
+   SEO
 ===================================== */
 
 function getSeo(
@@ -209,22 +233,15 @@ function getSeo(
 ) {
   const item = SERVICES[service];
 
-  const title =
-    `${locationName} ${item.shortTitle} | ${COMPANY}`;
-
-  const description =
-    `${locationName} ${item.title} 상담. ` +
-    "철거 범위, 현장 조건, 비용 견적 및 작업 일정 안내.";
-
   return {
-    title,
-    description,
+    title:
+      `${locationName} ${item.shortTitle} | ${COMPANY}`,
+
+    description:
+      `${locationName} ${item.title} 상담. ` +
+      "철거 범위, 현장 조건, 비용 견적 및 작업 일정 안내.",
   };
 }
-
-/* =====================================
-   페이지 메타데이터
-===================================== */
 
 export async function generateMetadata({
   params,
@@ -361,6 +378,11 @@ export default async function RegionServicePage({
   const estimateItems = ESTIMATE_GUIDES[service];
 
   const mainPhoto = getRegionPhoto(service, region);
+
+  const beforeAfter = getBeforeAfter(service, region);
+
+  const hasBeforeAfter =
+    Boolean(beforeAfter.before && beforeAfter.after);
 
   /* =====================================
      구조화 데이터
@@ -581,51 +603,57 @@ export default async function RegionServicePage({
 
         {/* 철거 전후 사진 */}
 
-        {item.before && item.after && (
-          <section className="section section-alt">
-            <div className="container">
-              <div className="section-heading">
-                <span className="section-tag">
-                  BEFORE & AFTER
-                </span>
+        {hasBeforeAfter &&
+          beforeAfter.before &&
+          beforeAfter.after && (
+            <section className="section section-alt">
+              <div className="container">
+                <div className="section-heading">
+                  <span className="section-tag">
+                    BEFORE & AFTER
+                  </span>
 
-                <h2>{item.title} 철거 전후</h2>
+                  <h2>
+                    {item.title} 철거 전후
+                  </h2>
 
-                <p>
-                  해당 서비스와 관련된
-                  참고 현장의 철거 전후 사진입니다.
-                </p>
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
-                  gap: 20,
-                }}
-              >
-                <div>
-                  <h3>철거 전</h3>
-
-                  <Photo
-                    src={item.before}
-                    alt={`${item.title} 철거 전 참고 사진`}
-                  />
+                  <p>
+                    철거 작업 참고 현장의
+                    전후 사진입니다.
+                    해당 지역 또는 해당 서비스에서
+                    촬영한 사진이라는 의미는 아닙니다.
+                  </p>
                 </div>
 
-                <div>
-                  <h3>철거 후</h3>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
+                    gap: 20,
+                  }}
+                >
+                  <div>
+                    <h3>철거 전</h3>
 
-                  <Photo
-                    src={item.after}
-                    alt={`${item.title} 철거 후 참고 사진`}
-                  />
+                    <Photo
+                      src={beforeAfter.before}
+                      alt="철거 전 참고 현장 사진"
+                    />
+                  </div>
+
+                  <div>
+                    <h3>철거 후</h3>
+
+                    <Photo
+                      src={beforeAfter.after}
+                      alt="철거 후 참고 현장 사진"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
-        )}
+            </section>
+          )}
 
         {/* 견적 안내 */}
 
@@ -643,7 +671,8 @@ export default async function RegionServicePage({
               </span>
 
               <h2>
-                {locationName} {item.shortTitle} 견적 안내
+                {locationName} {item.shortTitle}
+                견적 안내
               </h2>
 
               <p>
