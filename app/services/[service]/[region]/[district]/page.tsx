@@ -31,6 +31,7 @@ type Props = {
 
 /* =====================================
    정적 지역페이지 생성
+   5개 서비스 × 57개 지역 = 285개
 ===================================== */
 
 export function generateStaticParams() {
@@ -48,11 +49,9 @@ export const dynamicParams = false;
 /* =====================================
    지역별 대표 사진 설정
 
-   경기: 기존 서비스 사진
-   충남: 별도 대표 사진
-   충북: 별도 대표 사진
-
-   실제 지역 시공사진이라는 의미는 아님
+   경기: 기존 서비스별 사진 유지
+   충남: 상가 철거 카테고리 사진으로 통일
+   충북: 이전에 지정한 사진 유지
 ===================================== */
 
 const REGION_PHOTOS: Record<
@@ -60,10 +59,10 @@ const REGION_PHOTOS: Record<
   Record<ServiceSlug, string>
 > = {
   chungnam: {
-    house: "/IMG_2381.jpeg",
-    commercial: "/IMG_2383.jpeg",
-    office: "/IMG_2384.jpeg",
-    interior: "/IMG_2385.jpeg",
+    house: "/IMG_2386.jpeg",
+    commercial: "/IMG_2386.jpeg",
+    office: "/IMG_2386.jpeg",
+    interior: "/IMG_2386.jpeg",
     restoration: "/IMG_2386.jpeg",
   },
 
@@ -280,7 +279,7 @@ export async function generateMetadata({
       images: [
         {
           url: `${SITE_URL}${photo}`,
-          alt: `${SERVICES[service].title} 참고 사진`,
+          alt: `${SERVICES[service].title} 작업 참고 사진`,
         },
       ],
     },
