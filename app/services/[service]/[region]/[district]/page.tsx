@@ -46,69 +46,59 @@ export function generateStaticParams() {
 export const dynamicParams = false;
 
 /* =====================================
-   지역별 대표 사진
+   지역별 사진 설정
+
+   경기: 기존 서비스 사진
+   충남: 상가 철거 사진
+   충북: 별도 대표 사진 + 주택 철거 전후
+
+   주의:
+   사진이 모두 같은 현장이라는 의미는 아님
 ===================================== */
 
-const REGION_PHOTOS: Record<
-  "chungnam" | "chungbuk",
-  Record<ServiceSlug, string>
-> = {
-  chungnam: {
-    house: "/IMG_2386.jpeg",
-    commercial: "/IMG_2386.jpeg",
-    office: "/IMG_2386.jpeg",
-    interior: "/IMG_2386.jpeg",
-    restoration: "/IMG_2386.jpeg",
-  },
+const CHUNGNAM_PHOTO = "/IMG_2386.jpeg";
 
-  chungbuk: {
-    house: "/IMG_2382.jpeg",
-    commercial: "/IMG_2384.jpeg",
-    office: "/IMG_2386.jpeg",
-    interior: "/IMG_2381.jpeg",
-    restoration: "/IMG_2383.jpeg",
-  },
+const CHUNGBUK_PHOTOS: Record<
+  ServiceSlug,
+  string
+> = {
+  house: "/IMG_2382.jpeg",
+  commercial: "/IMG_2384.jpeg",
+  office: "/IMG_2386.jpeg",
+  interior: "/IMG_2381.jpeg",
+  restoration: "/IMG_2383.jpeg",
 };
 
-function getRegionPhoto(
-  service: ServiceSlug,
-  region: string
-): string {
-  if (region === "chungnam") {
-    return REGION_PHOTOS.chungnam[service];
-  }
-
-  if (region === "chungbuk") {
-    return REGION_PHOTOS.chungbuk[service];
-  }
-
-  return SERVICES[service].image;
-}
-
-/* =====================================
-   지역별 철거 전후 사진
-
-   충남은 모든 서비스에 상가 철거 전후 적용
-   경기·충북은 기존 설정 유지
-===================================== */
-
-function getBeforeAfter(
-  service: ServiceSlug,
-  region: string
-): {
+type PhotoSet = {
+  main: string;
   before: string | null;
   after: string | null;
-} {
+};
+
+function getPhotos(
+  service: ServiceSlug,
+  region: string
+): PhotoSet {
+  const item = SERVICES[service];
+
   if (region === "chungnam") {
     return {
+      main: CHUNGNAM_PHOTO,
       before: "/IMG_2383.jpeg",
       after: "/IMG_2382.jpeg",
     };
   }
 
-  const item = SERVICES[service];
+  if (region === "chungbuk") {
+    return {
+      main: CHUNGBUK_PHOTOS[service],
+      before: "/IMG_2381.jpeg",
+      after: "/IMG_2380.jpeg",
+    };
+  }
 
   return {
+    main: item.image,
     before: item.before ?? null,
     after: item.after ?? null,
   };
@@ -268,7 +258,7 @@ export async function generateMetadata({
     SITE_URL +
     serviceRegionUrl(service, region, district);
 
-  const photo = getRegionPhoto(service, region);
+  const photos = getPhotos(service, region);
 
   return {
     title: {
@@ -295,7 +285,7 @@ export async function generateMetadata({
       description,
       images: [
         {
-          url: `${SITE_URL}${photo}`,
+          url: `${SITE_URL}${photos.main}`,
           alt: `${SERVICES[service].title} 작업 참고 사진`,
         },
       ],
@@ -305,7 +295,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [`${SITE_URL}${photo}`],
+      images: [`${SITE_URL}${photos.main}`],
     },
   };
 }
@@ -361,9 +351,7 @@ export default async function RegionServicePage({
   }
 
   const item = SERVICES[service];
-
   const locationName = location.fullName;
-
   const title = `${locationName} ${item.title}`;
 
   const pageUrl =
@@ -377,12 +365,7 @@ export default async function RegionServicePage({
 
   const estimateItems = ESTIMATE_GUIDES[service];
 
-  const mainPhoto = getRegionPhoto(service, region);
-
-  const beforeAfter = getBeforeAfter(service, region);
-
-  const hasBeforeAfter =
-    Boolean(beforeAfter.before && beforeAfter.after);
+  const photos = getPhotos(service, region);
 
   /* =====================================
      구조화 데이터
@@ -488,8 +471,6 @@ export default async function RegionServicePage({
           </Link>
 
           <nav className="nav-links">
-            <Link href="/">홈</Link>
-
             <Link href={`/services/${service}`}>
               {item.shortTitle}
             </Link>
@@ -562,7 +543,7 @@ export default async function RegionServicePage({
             </div>
 
             <Photo
-              src={mainPhoto}
+              src={photos.main}
               alt={`${item.title} 작업 참고 사진`}
             />
 
@@ -573,7 +554,7 @@ export default async function RegionServicePage({
                 color: "#666",
               }}
             >
-              위 사진은 서비스 관련 참고 사진이며,
+              위 사진은 작업 참고 사진이며,
               해당 지역에서 촬영한 사진이라는
               의미는 아닙니다.
             </p>
@@ -601,68 +582,63 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 철거 전후 사진 */}
+        {/* 철거 전후 참고 사진 */}
 
-        {hasBeforeAfter &&
-          beforeAfter.before &&
-          beforeAfter.after && (
-            <section className="section section-alt">
-              <div className="container">
-                <div className="section-heading">
-                  <span className="section-tag">
-                    BEFORE & AFTER
-                  </span>
+        {photos.before && photos.after && (
+          <section className="section section-alt">
+            <div className="container">
+              <div className="section-heading">
+                <span className="section-tag">
+                  BEFORE & AFTER
+                </span>
 
-                  <h2>
-                    {item.title} 철거 전후
-                  </h2>
+                <h2>
+                  {item.title} 철거 전후 참고 사진
+                </h2>
 
-                  <p>
-                    철거 작업 참고 현장의
-                    전후 사진입니다.
-                    해당 지역 또는 해당 서비스에서
-                    촬영한 사진이라는 의미는 아닙니다.
-                  </p>
+                <p>
+                  철거 작업 참고 사진입니다.
+                  해당 지역에서 촬영한 사진이라는
+                  의미는 아닙니다.
+                </p>
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
+                  gap: 20,
+                }}
+              >
+                <div>
+                  <h3>철거 전</h3>
+
+                  <Photo
+                    src={photos.before}
+                    alt="철거 전 참고 사진"
+                  />
                 </div>
 
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns:
-                      "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
-                    gap: 20,
-                  }}
-                >
-                  <div>
-                    <h3>철거 전</h3>
+                <div>
+                  <h3>철거 후</h3>
 
-                    <Photo
-                      src={beforeAfter.before}
-                      alt="철거 전 참고 현장 사진"
-                    />
-                  </div>
-
-                  <div>
-                    <h3>철거 후</h3>
-
-                    <Photo
-                      src={beforeAfter.after}
-                      alt="철거 후 참고 현장 사진"
-                    />
-                  </div>
+                  <Photo
+                    src={photos.after}
+                    alt="철거 후 참고 사진"
+                  />
                 </div>
               </div>
-            </section>
-          )}
+            </div>
+          </section>
+        )}
 
         {/* 견적 안내 */}
 
         <section
           id="estimate"
           className="section"
-          style={{
-            scrollMarginTop: 90,
-          }}
+          style={{ scrollMarginTop: 90 }}
         >
           <div className="container">
             <div className="section-heading">
@@ -671,8 +647,7 @@ export default async function RegionServicePage({
               </span>
 
               <h2>
-                {locationName} {item.shortTitle}
-                견적 안내
+                {locationName} {item.shortTitle} 견적 안내
               </h2>
 
               <p>
@@ -712,12 +687,7 @@ export default async function RegionServicePage({
               </h2>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gap: 14,
-              }}
-            >
+            <div style={{ display: "grid", gap: 14 }}>
               {faqs.map((faq) => (
                 <details
                   key={faq.question}
