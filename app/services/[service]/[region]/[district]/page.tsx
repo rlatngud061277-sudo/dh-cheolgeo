@@ -31,7 +31,6 @@ type Props = {
 
 /* =====================================
    정적 지역페이지 생성
-   5개 서비스 × 57개 지역 = 285개
 ===================================== */
 
 export function generateStaticParams() {
@@ -45,6 +44,52 @@ export function generateStaticParams() {
 }
 
 export const dynamicParams = false;
+
+/* =====================================
+   지역별 대표 사진 설정
+
+   경기: 기존 서비스 사진
+   충남: 별도 대표 사진
+   충북: 별도 대표 사진
+
+   실제 지역 시공사진이라는 의미는 아님
+===================================== */
+
+const REGION_PHOTOS: Record<
+  "chungnam" | "chungbuk",
+  Record<ServiceSlug, string>
+> = {
+  chungnam: {
+    house: "/IMG_2381.jpeg",
+    commercial: "/IMG_2383.jpeg",
+    office: "/IMG_2384.jpeg",
+    interior: "/IMG_2385.jpeg",
+    restoration: "/IMG_2386.jpeg",
+  },
+
+  chungbuk: {
+    house: "/IMG_2382.jpeg",
+    commercial: "/IMG_2384.jpeg",
+    office: "/IMG_2386.jpeg",
+    interior: "/IMG_2381.jpeg",
+    restoration: "/IMG_2383.jpeg",
+  },
+};
+
+function getRegionPhoto(
+  service: ServiceSlug,
+  region: string
+): string {
+  if (region === "chungnam") {
+    return REGION_PHOTOS.chungnam[service];
+  }
+
+  if (region === "chungbuk") {
+    return REGION_PHOTOS.chungbuk[service];
+  }
+
+  return SERVICES[service].image;
+}
 
 /* =====================================
    서비스별 견적 안내
@@ -178,6 +223,10 @@ function getSeo(
   };
 }
 
+/* =====================================
+   페이지 메타데이터
+===================================== */
+
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
@@ -194,8 +243,6 @@ export async function generateMetadata({
     };
   }
 
-  const item = SERVICES[service];
-
   const { title, description } = getSeo(
     service,
     location.fullName
@@ -204,6 +251,8 @@ export async function generateMetadata({
   const url =
     SITE_URL +
     serviceRegionUrl(service, region, district);
+
+  const photo = getRegionPhoto(service, region);
 
   return {
     title: {
@@ -230,8 +279,8 @@ export async function generateMetadata({
       description,
       images: [
         {
-          url: `${SITE_URL}${item.image}`,
-          alt: `${item.title} 현장 참고 사진`,
+          url: `${SITE_URL}${photo}`,
+          alt: `${SERVICES[service].title} 참고 사진`,
         },
       ],
     },
@@ -240,7 +289,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [`${SITE_URL}${item.image}`],
+      images: [`${SITE_URL}${photo}`],
     },
   };
 }
@@ -299,8 +348,7 @@ export default async function RegionServicePage({
 
   const locationName = location.fullName;
 
-  const title =
-    `${locationName} ${item.title}`;
+  const title = `${locationName} ${item.title}`;
 
   const pageUrl =
     SITE_URL +
@@ -312,6 +360,8 @@ export default async function RegionServicePage({
   );
 
   const estimateItems = ESTIMATE_GUIDES[service];
+
+  const mainPhoto = getRegionPhoto(service, region);
 
   /* =====================================
      구조화 데이터
@@ -407,9 +457,7 @@ export default async function RegionServicePage({
         }}
       />
 
-      {/* =====================================
-          상단 메뉴
-      ===================================== */}
+      {/* 상단 메뉴 */}
 
       <header className="site-header">
         <div className="container header-inner">
@@ -432,9 +480,7 @@ export default async function RegionServicePage({
       </header>
 
       <main>
-        {/* =====================================
-            메인 소개
-        ===================================== */}
+        {/* 메인 소개 */}
 
         <section className="hero">
           <div className="container">
@@ -474,9 +520,7 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* =====================================
-            서비스 작업 안내
-        ===================================== */}
+        {/* 서비스 작업 안내 */}
 
         <section className="section">
           <div className="container">
@@ -497,8 +541,8 @@ export default async function RegionServicePage({
             </div>
 
             <Photo
-              src={item.image}
-              alt={`${item.title} 현장 참고 사진`}
+              src={mainPhoto}
+              alt={`${item.title} 작업 참고 사진`}
             />
 
             <p
@@ -536,9 +580,7 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* =====================================
-            철거 전후 사진
-        ===================================== */}
+        {/* 철거 전후 사진 */}
 
         {item.before && item.after && (
           <section className="section section-alt">
@@ -586,14 +628,14 @@ export default async function RegionServicePage({
           </section>
         )}
 
-        {/* =====================================
-            견적 안내
-        ===================================== */}
+        {/* 견적 안내 */}
 
         <section
           id="estimate"
           className="section"
-          style={{ scrollMarginTop: 90 }}
+          style={{
+            scrollMarginTop: 90,
+          }}
         >
           <div className="container">
             <div className="section-heading">
@@ -627,9 +669,7 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* =====================================
-            자주 묻는 질문
-        ===================================== */}
+        {/* 자주 묻는 질문 */}
 
         <section className="section section-alt">
           <div className="container">
@@ -676,9 +716,7 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* =====================================
-            전화 상담
-        ===================================== */}
+        {/* 전화 상담 */}
 
         <section
           id="contact"
@@ -714,9 +752,7 @@ export default async function RegionServicePage({
         </section>
       </main>
 
-      {/* =====================================
-          하단 업체 정보
-      ===================================== */}
+      {/* 하단 업체 정보 */}
 
       <footer className="site-footer">
         <div className="container footer-inner">
