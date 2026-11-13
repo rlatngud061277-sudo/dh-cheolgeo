@@ -19,6 +19,8 @@ import {
   type ServiceSlug,
 } from "../../../../../lib/dh-data";
 
+import { getDhSeoContent } from "../../../../../lib/dh-seo";
+
 type Params = {
   service: string;
   region: string;
@@ -30,7 +32,7 @@ type Props = {
 };
 
 /* =====================================
-   정적 지역페이지 생성
+   정적 페이지 생성
    5개 서비스 × 57개 지역 = 285개
 ===================================== */
 
@@ -47,19 +49,8 @@ export function generateStaticParams() {
 export const dynamicParams = false;
 
 /* =====================================
-   지역별 사진 설정
-
-   경기: 기존 서비스별 사진 유지
-
-   충남:
-   대표 IMG_2386
-   철거 전 IMG_2385
-   철거 후 IMG_2384
-
-   충북:
-   대표 IMG_2382
-   철거 전 IMG_2382
-   철거 후 IMG_2383 (최신 변경)
+   지역별 사진
+   기존 설정 유지
 ===================================== */
 
 type PhotoSet = {
@@ -207,26 +198,6 @@ const ESTIMATE_GUIDES: Record<
 };
 
 /* =====================================
-   SEO 제목 및 설명
-===================================== */
-
-function getSeo(
-  service: ServiceSlug,
-  locationName: string
-) {
-  const item = SERVICES[service];
-
-  return {
-    title:
-      `${locationName} ${item.shortTitle} | ${COMPANY}`,
-
-    description:
-      `${locationName} ${item.title} 상담. ` +
-      "철거 범위, 현장 조건, 비용 견적 및 작업 일정 안내.",
-  };
-}
-
-/* =====================================
    SEO 메타데이터
 ===================================== */
 
@@ -235,9 +206,7 @@ export async function generateMetadata({
 }: Props): Promise<Metadata> {
   const { service, region, district } = await params;
 
-  const location = getLocation(region, district);
-
-  if (!isServiceSlug(service) || !location) {
+  if (!isServiceSlug(service)) {
     return {
       robots: {
         index: false,
@@ -246,26 +215,32 @@ export async function generateMetadata({
     };
   }
 
-  const { title, description } = getSeo(
+  const seo = getDhSeoContent(
     service,
-    location.fullName
+    region,
+    district
   );
 
-  const url =
-    SITE_URL +
-    serviceRegionUrl(service, region, district);
+  if (!seo) {
+    return {
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
 
   const photos = getPhotos(service, region);
 
   return {
     title: {
-      absolute: title,
+      absolute: seo.title,
     },
 
-    description,
+    description: seo.description,
 
     alternates: {
-      canonical: url,
+      canonical: seo.canonical,
     },
 
     robots: {
@@ -277,9 +252,9 @@ export async function generateMetadata({
       type: "website",
       locale: "ko_KR",
       siteName: COMPANY,
-      url,
-      title,
-      description,
+      url: seo.canonical,
+      title: seo.title,
+      description: seo.description,
       images: [
         {
           url: `${SITE_URL}${photos.main}`,
@@ -290,8 +265,8 @@ export async function generateMetadata({
 
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
+      title: seo.title,
+      description: seo.description,
       images: [`${SITE_URL}${photos.main}`],
     },
   };
@@ -341,9 +316,19 @@ export default async function RegionServicePage({
 }: Props) {
   const { service, region, district } = await params;
 
+  if (!isServiceSlug(service)) {
+    notFound();
+  }
+
   const location = getLocation(region, district);
 
-  if (!isServiceSlug(service) || !location) {
+  const seo = getDhSeoContent(
+    service,
+    region,
+    district
+  );
+
+  if (!location || !seo) {
     notFound();
   }
 
@@ -351,17 +336,9 @@ export default async function RegionServicePage({
 
   const locationName = location.fullName;
 
-  const title =
-    `${locationName} ${item.title}`;
-
   const pageUrl =
     SITE_URL +
     serviceRegionUrl(service, region, district);
-
-  const { description } = getSeo(
-    service,
-    locationName
-  );
 
   const estimateItems = ESTIMATE_GUIDES[service];
 
@@ -391,7 +368,7 @@ export default async function RegionServicePage({
         {
           "@type": "ListItem",
           position: 3,
-          name: title,
+          name: seo.h1,
           item: pageUrl,
         },
       ],
@@ -399,8 +376,9 @@ export default async function RegionServicePage({
     {
       "@context": "https://schema.org",
       "@type": "Service",
-      name: title,
-      description,
+      "@id": `${pageUrl}#service`,
+      name: seo.h1,
+      description: seo.description,
       serviceType: item.shortTitle,
       url: pageUrl,
       provider: {
@@ -413,37 +391,6 @@ export default async function RegionServicePage({
         "@type": "AdministrativeArea",
         name: locationName,
       },
-    },
-  ];
-
-  /* =====================================
-     FAQ
-  ===================================== */
-
-  const faqs = [
-    {
-      question:
-        `${locationName} ${item.shortTitle} 견적은 어떻게 받나요?`,
-      answer:
-        "현장 주소, 철거 범위, 면적, 사진과 희망 일정을 준비해 전화로 문의해 주세요. 현장 조건을 확인한 뒤 견적을 안내합니다.",
-    },
-    {
-      question:
-        `${item.shortTitle} 비용은 어떻게 결정되나요?`,
-      answer:
-        "작업 면적, 철거 대상, 폐기물 처리량, 장비 접근성, 건물 관리규정과 현장 조건에 따라 달라집니다.",
-    },
-    {
-      question:
-        `${locationName} 출장 작업이 가능한가요?`,
-      answer:
-        "상담 대상 지역에 포함됩니다. 실제 작업 가능 여부는 현장 위치, 작업 범위와 일정에 따라 확인합니다.",
-    },
-    {
-      question:
-        `${item.shortTitle} 작업 전에 무엇을 확인해야 하나요?`,
-      answer:
-        "철거할 시설물과 유지할 설비를 구분하고, 작업 가능 시간과 폐기물 반출 조건을 확인하는 것이 좋습니다.",
     },
   ];
 
@@ -498,11 +445,7 @@ export default async function RegionServicePage({
               <strong>{COMPANY}</strong>
             </h1>
 
-            <p>
-              {locationName}에서 {item.title}을
-              알아보고 계신다면 현장 상황과
-              철거 범위를 먼저 확인해 주세요.
-            </p>
+            <p>{seo.intro}</p>
 
             <p>{item.description}</p>
 
@@ -537,11 +480,7 @@ export default async function RegionServicePage({
                 {locationName} {item.title} 작업 안내
               </h2>
 
-              <p>
-                {item.title}을 진행할 때
-                확인해야 할 작업 범위와
-                현장 조건을 안내합니다.
-              </p>
+              <p>{seo.detail}</p>
             </div>
 
             <Photo
@@ -580,6 +519,40 @@ export default async function RegionServicePage({
                   <p>{work.text}</p>
                 </article>
               ))}
+            </div>
+
+            {/* 지역별 철거 확인사항 */}
+
+            <div
+              style={{
+                marginTop: 36,
+                padding: 24,
+                borderRadius: 14,
+                background: "#fff7ed",
+                border: "1px solid #fed7aa",
+              }}
+            >
+              <span className="section-tag">
+                WORK CHECKLIST
+              </span>
+
+              <h3>
+                {locationName} {item.shortTitle}
+                확인사항
+              </h3>
+
+              <ul
+                style={{
+                  paddingLeft: 22,
+                  lineHeight: 1.9,
+                }}
+              >
+                {seo.checklist.map((text, index) => (
+                  <li key={`${index}-${text}`}>
+                    {text}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>
@@ -674,7 +647,7 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 자주 묻는 질문 */}
+        {/* 지역별 FAQ */}
 
         <section className="section section-alt">
           <div className="container">
@@ -695,7 +668,7 @@ export default async function RegionServicePage({
                 gap: 14,
               }}
             >
-              {faqs.map((faq) => (
+              {seo.faqs.map((faq) => (
                 <details
                   key={faq.question}
                   style={{
