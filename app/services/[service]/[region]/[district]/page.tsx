@@ -31,7 +31,6 @@ type Props = {
 
 /* =====================================
    정적 지역페이지 생성
-   5개 서비스 × 57개 지역 = 285개
 ===================================== */
 
 export function generateStaticParams() {
@@ -49,34 +48,23 @@ export const dynamicParams = false;
 /* =====================================
    지역별 사진 설정
 
-   경기: 기존 사진 유지
+   경기: 기존 서비스별 사진 유지
 
    충남:
-   대표 IMG_2386
+   대표 IMG_2382
    전 IMG_2385
    후 IMG_2384
 
    충북:
-   대표 서비스별 기존 설정
-   전 IMG_2383
-   후 IMG_2382
+   대표 IMG_2386
+   전 IMG_2382
+   후 IMG_2386
 ===================================== */
 
 type PhotoSet = {
   main: string;
   before: string | null;
   after: string | null;
-};
-
-const CHUNGBUK_MAIN_PHOTOS: Record<
-  ServiceSlug,
-  string
-> = {
-  house: "/IMG_2382.jpeg",
-  commercial: "/IMG_2384.jpeg",
-  office: "/IMG_2386.jpeg",
-  interior: "/IMG_2381.jpeg",
-  restoration: "/IMG_2383.jpeg",
 };
 
 function getPhotos(
@@ -87,7 +75,7 @@ function getPhotos(
 
   if (region === "chungnam") {
     return {
-      main: "/IMG_2386.jpeg",
+      main: "/IMG_2382.jpeg",
       before: "/IMG_2385.jpeg",
       after: "/IMG_2384.jpeg",
     };
@@ -95,9 +83,9 @@ function getPhotos(
 
   if (region === "chungbuk") {
     return {
-      main: CHUNGBUK_MAIN_PHOTOS[service],
-      before: "/IMG_2383.jpeg",
-      after: "/IMG_2382.jpeg",
+      main: "/IMG_2386.jpeg",
+      before: "/IMG_2382.jpeg",
+      after: "/IMG_2386.jpeg",
     };
   }
 
@@ -119,7 +107,7 @@ type EstimateGuide = {
 
 const ESTIMATE_GUIDES: Record<
   ServiceSlug,
-  EstimateGuide[]
+  { title: string; text: string }[]
 > = {
   house: [
     {
@@ -139,7 +127,6 @@ const ESTIMATE_GUIDES: Record<
       text: "철거할 공간 전체와 주요 시설물 사진",
     },
   ],
-
   commercial: [
     {
       title: "매장 업종",
@@ -158,7 +145,6 @@ const ESTIMATE_GUIDES: Record<
       text: "폐업일, 퇴거일, 건물 작업 가능 시간",
     },
   ],
-
   office: [
     {
       title: "사무실 면적",
@@ -177,7 +163,6 @@ const ESTIMATE_GUIDES: Record<
       text: "사무실 이전일과 철거 완료 희망일",
     },
   ],
-
   interior: [
     {
       title: "부분철거 위치",
@@ -196,7 +181,6 @@ const ESTIMATE_GUIDES: Record<
       text: "철거 대상과 주변 구조가 보이는 사진",
     },
   ],
-
   restoration: [
     {
       title: "계약 조건",
@@ -218,7 +202,7 @@ const ESTIMATE_GUIDES: Record<
 };
 
 /* =====================================
-   SEO 제목 및 설명
+   SEO
 ===================================== */
 
 function getSeo(
@@ -228,32 +212,22 @@ function getSeo(
   const item = SERVICES[service];
 
   return {
-    title:
-      `${locationName} ${item.shortTitle} | ${COMPANY}`,
-
+    title: `${locationName} ${item.shortTitle} | ${COMPANY}`,
     description:
       `${locationName} ${item.title} 상담. ` +
       "철거 범위, 현장 조건, 비용 견적 및 작업 일정 안내.",
   };
 }
 
-/* =====================================
-   SEO 메타데이터
-===================================== */
-
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
   const { service, region, district } = await params;
-
   const location = getLocation(region, district);
 
   if (!isServiceSlug(service) || !location) {
     return {
-      robots: {
-        index: false,
-        follow: false,
-      },
+      robots: { index: false, follow: false },
     };
   }
 
@@ -263,27 +237,15 @@ export async function generateMetadata({
   );
 
   const url =
-    SITE_URL +
-    serviceRegionUrl(service, region, district);
+    SITE_URL + serviceRegionUrl(service, region, district);
 
   const photos = getPhotos(service, region);
 
   return {
-    title: {
-      absolute: title,
-    },
-
+    title: { absolute: title },
     description,
-
-    alternates: {
-      canonical: url,
-    },
-
-    robots: {
-      index: true,
-      follow: true,
-    },
-
+    alternates: { canonical: url },
+    robots: { index: true, follow: true },
     openGraph: {
       type: "website",
       locale: "ko_KR",
@@ -298,7 +260,6 @@ export async function generateMetadata({
         },
       ],
     },
-
     twitter: {
       card: "summary_large_image",
       title,
@@ -335,9 +296,7 @@ function Photo({
         alt={alt}
         fill
         sizes="(max-width: 768px) 100vw, 900px"
-        style={{
-          objectFit: "cover",
-        }}
+        style={{ objectFit: "cover" }}
       />
     </div>
   );
@@ -351,7 +310,6 @@ export default async function RegionServicePage({
   params,
 }: Props) {
   const { service, region, district } = await params;
-
   const location = getLocation(region, district);
 
   if (!isServiceSlug(service) || !location) {
@@ -359,27 +317,14 @@ export default async function RegionServicePage({
   }
 
   const item = SERVICES[service];
-
   const locationName = location.fullName;
-
   const title = `${locationName} ${item.title}`;
-
   const pageUrl =
-    SITE_URL +
-    serviceRegionUrl(service, region, district);
+    SITE_URL + serviceRegionUrl(service, region, district);
 
-  const { description } = getSeo(
-    service,
-    locationName
-  );
-
+  const { description } = getSeo(service, locationName);
   const estimateItems = ESTIMATE_GUIDES[service];
-
   const photos = getPhotos(service, region);
-
-  /* =====================================
-     구조화 데이터
-  ===================================== */
 
   const schema = [
     {
@@ -426,32 +371,24 @@ export default async function RegionServicePage({
     },
   ];
 
-  /* =====================================
-     자주 묻는 질문
-  ===================================== */
-
   const faqs = [
     {
-      question:
-        `${locationName} ${item.shortTitle} 견적은 어떻게 받나요?`,
+      question: `${locationName} ${item.shortTitle} 견적은 어떻게 받나요?`,
       answer:
         "현장 주소, 철거 범위, 면적, 사진과 희망 일정을 준비해 전화로 문의해 주세요. 현장 조건을 확인한 뒤 견적을 안내합니다.",
     },
     {
-      question:
-        `${item.shortTitle} 비용은 어떻게 결정되나요?`,
+      question: `${item.shortTitle} 비용은 어떻게 결정되나요?`,
       answer:
         "작업 면적, 철거 대상, 폐기물 처리량, 장비 접근성, 건물 관리규정과 현장 조건에 따라 달라집니다.",
     },
     {
-      question:
-        `${locationName} 출장 작업이 가능한가요?`,
+      question: `${locationName} 출장 작업이 가능한가요?`,
       answer:
         "상담 대상 지역에 포함됩니다. 실제 작업 가능 여부는 현장 위치, 작업 범위와 일정에 따라 확인합니다.",
     },
     {
-      question:
-        `${item.shortTitle} 작업 전에 무엇을 확인해야 하나요?`,
+      question: `${item.shortTitle} 작업 전에 무엇을 확인해야 하나요?`,
       answer:
         "철거할 시설물과 유지할 설비를 구분하고, 작업 가능 시간과 폐기물 반출 조건을 확인하는 것이 좋습니다.",
     },
@@ -459,8 +396,6 @@ export default async function RegionServicePage({
 
   return (
     <>
-      {/* 구조화 데이터 */}
-
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -471,8 +406,6 @@ export default async function RegionServicePage({
         }}
       />
 
-      {/* 상단 메뉴 */}
-
       <header className="site-header">
         <div className="container header-inner">
           <Link href="/" className="brand">
@@ -482,11 +415,9 @@ export default async function RegionServicePage({
 
           <nav className="nav-links">
             <Link href="/">홈</Link>
-
             <Link href={`/services/${service}`}>
               {item.shortTitle}
             </Link>
-
             <a href="#estimate">견적 안내</a>
             <a href="#contact">전화 상담</a>
           </nav>
@@ -494,8 +425,6 @@ export default async function RegionServicePage({
       </header>
 
       <main>
-        {/* 메인 소개 */}
-
         <section className="hero">
           <div className="container">
             <span className="hero-label">
@@ -534,8 +463,6 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 서비스 작업 안내 */}
-
         <section className="section">
           <div className="container">
             <div className="section-heading">
@@ -548,9 +475,8 @@ export default async function RegionServicePage({
               </h2>
 
               <p>
-                {item.title}을 진행할 때
-                확인해야 할 작업 범위와
-                현장 조건을 안내합니다.
+                {item.title}을 진행할 때 확인해야 할
+                작업 범위와 현장 조건을 안내합니다.
               </p>
             </div>
 
@@ -577,24 +503,19 @@ export default async function RegionServicePage({
                   key={work.title}
                   style={{
                     padding: "22px 0",
-                    borderBottom:
-                      "1px solid #e5e7eb",
+                    borderBottom: "1px solid #e5e7eb",
                   }}
                 >
                   <span className="section-tag">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-
                   <h3>{work.title}</h3>
-
                   <p>{work.text}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
-
-        {/* 철거 전후 사진 */}
 
         {photos.before && photos.after && (
           <section className="section section-alt">
@@ -609,7 +530,7 @@ export default async function RegionServicePage({
                 </h2>
 
                 <p>
-                  철거 작업 전후 참고 사진입니다.
+                  철거 작업 참고 사진입니다.
                   해당 지역에서 촬영한 사진이라는
                   의미는 아닙니다.
                 </p>
@@ -625,7 +546,6 @@ export default async function RegionServicePage({
               >
                 <div>
                   <h3>철거 전</h3>
-
                   <Photo
                     src={photos.before}
                     alt="철거 전 참고 사진"
@@ -634,7 +554,6 @@ export default async function RegionServicePage({
 
                 <div>
                   <h3>철거 후</h3>
-
                   <Photo
                     src={photos.after}
                     alt="철거 후 참고 사진"
@@ -645,14 +564,10 @@ export default async function RegionServicePage({
           </section>
         )}
 
-        {/* 견적 안내 */}
-
         <section
           id="estimate"
           className="section"
-          style={{
-            scrollMarginTop: 90,
-          }}
+          style={{ scrollMarginTop: 90 }}
         >
           <div className="container">
             <div className="section-heading">
@@ -672,10 +587,7 @@ export default async function RegionServicePage({
 
             <div className="card-grid">
               {estimateItems.map((info) => (
-                <article
-                  className="card"
-                  key={info.title}
-                >
+                <article className="card" key={info.title}>
                   <div className="card-body">
                     <h3>{info.title}</h3>
                     <p>{info.text}</p>
@@ -686,27 +598,17 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 자주 묻는 질문 */}
-
         <section className="section section-alt">
           <div className="container">
             <div className="section-heading">
-              <span className="section-tag">
-                FAQ
-              </span>
-
+              <span className="section-tag">FAQ</span>
               <h2>
                 {locationName} {item.shortTitle}
                 자주 묻는 질문
               </h2>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gap: 14,
-              }}
-            >
+            <div style={{ display: "grid", gap: 14 }}>
               {faqs.map((faq) => (
                 <details
                   key={faq.question}
@@ -725,7 +627,6 @@ export default async function RegionServicePage({
                   >
                     {faq.question}
                   </summary>
-
                   <p>{faq.answer}</p>
                 </details>
               ))}
@@ -733,16 +634,10 @@ export default async function RegionServicePage({
           </div>
         </section>
 
-        {/* 전화 상담 */}
-
-        <section
-          id="contact"
-          className="contact-section"
-        >
+        <section id="contact" className="contact-section">
           <div className="container">
             <h2>
-              {locationName} {item.shortTitle}
-              견적 문의
+              {locationName} {item.shortTitle} 견적 문의
             </h2>
 
             <p>
@@ -769,8 +664,6 @@ export default async function RegionServicePage({
         </section>
       </main>
 
-      {/* 하단 업체 정보 */}
-
       <footer className="site-footer">
         <div className="container footer-inner">
           <div>
@@ -778,15 +671,12 @@ export default async function RegionServicePage({
 
             <div className="footer-info">
               <p>대표자: {OWNER}</p>
-
               <p>
                 사업자등록번호: {BUSINESS_NUMBER}
               </p>
-
               <p>
                 {locationName} {item.title} 상담
               </p>
-
               <p>
                 전화:{" "}
                 <a href={`tel:${PHONE}`}>
