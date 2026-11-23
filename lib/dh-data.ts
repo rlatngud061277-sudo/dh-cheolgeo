@@ -6,7 +6,6 @@
 export const SITE_URL = "https://www.dhcheolgeo.com";
 export const COMPANY = "DH 종합철거";
 export const OWNER = "이덕재";
-export const BUSINESS_NUMBER = "882-06-03153";
 export const PHONE = "01054731244";
 export const PHONE_DISPLAY = "010-5473-1244";
 

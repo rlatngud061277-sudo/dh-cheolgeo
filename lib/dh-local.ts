@@ -2,7 +2,6 @@ import {
   SITE_URL,
   COMPANY,
   OWNER,
-  BUSINESS_NUMBER,
   PHONE_DISPLAY,
   REGIONS,
   type RegionSlug,
@@ -141,7 +140,6 @@ export function businessSchema(areaServed: string) {
     image: `${SITE_URL}/IMG_2382.jpeg`,
     logo: `${SITE_URL}/IMG_1102.png`,
     founder: OWNER,
-    taxID: BUSINESS_NUMBER,
     priceRange: "현장 견적",
     areaServed: { "@type": "AdministrativeArea", name: areaServed },
   };

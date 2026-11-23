@@ -8,7 +8,6 @@ import {
   SITE_URL,
   COMPANY,
   OWNER,
-  BUSINESS_NUMBER,
   PHONE,
   PHONE_DISPLAY,
   SERVICES,
@@ -817,9 +816,6 @@ export default async function RegionServicePage({
             <div className="footer-info">
               <p>대표자: {OWNER}</p>
 
-              <p>
-                사업자등록번호: {BUSINESS_NUMBER}
-              </p>
 
               <p>
                 {locationName} {item.title} 상담

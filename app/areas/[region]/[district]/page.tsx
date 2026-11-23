@@ -7,7 +7,6 @@ import {
   SITE_URL,
   COMPANY,
   OWNER,
-  BUSINESS_NUMBER,
   PHONE,
   PHONE_DISPLAY,
   SERVICES,
@@ -338,7 +337,6 @@ export default async function AreaPage({ params }: Props) {
             <h3>{COMPANY}</h3>
             <div className="footer-info">
               <p>대표자: {OWNER}</p>
-              <p>사업자등록번호: {BUSINESS_NUMBER}</p>
               <p>{official} 철거 상담</p>
               <p>
                 전화: <a href={`tel:${PHONE}`}>{PHONE_DISPLAY}</a>

@@ -7,7 +7,6 @@ import {
   SITE_URL,
   COMPANY,
   OWNER,
-  BUSINESS_NUMBER,
   PHONE,
   PHONE_DISPLAY,
   SERVICES,
@@ -814,9 +813,6 @@ export default function HomePage() {
           <div className="footer-company">
             <p>상호: {COMPANY}</p>
             <p>대표자: {OWNER}</p>
-            <p>
-              사업자등록번호: {BUSINESS_NUMBER}
-            </p>
             <p>
               대표전화:{" "}
               <a href={`tel:${PHONE}`}>
