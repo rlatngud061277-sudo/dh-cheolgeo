@@ -20,6 +20,15 @@ import {
 } from "../../../../../lib/dh-data";
 
 import { getDhSeoContent } from "../../../../../lib/dh-seo";
+import {
+  SERVICE_SEO,
+  searchName,
+  officialName,
+  nearbyDistricts,
+  areaUrl,
+  businessSchema,
+  faqSchema,
+} from "../../../../../lib/dh-local";
 
 type Params = {
   service: string;
@@ -317,7 +326,7 @@ export default async function RegionServicePage({
   const { service, region, district } = await params;
 
   if (!isServiceSlug(service)) {
-    notFound();
+    return notFound();
   }
 
   const location = getLocation(region, district);
@@ -329,7 +338,7 @@ export default async function RegionServicePage({
   );
 
   if (!location || !seo) {
-    notFound();
+    return notFound();
   }
 
   const item = SERVICES[service];
@@ -341,6 +350,13 @@ export default async function RegionServicePage({
     serviceRegionUrl(service, region, district);
 
   const estimateItems = ESTIMATE_GUIDES[service];
+
+  const search = searchName(region, location.districtName);
+  const official = officialName(region, location.districtName);
+  const nearby = nearbyDistricts(region, district, 8);
+  const otherServices = (Object.keys(SERVICES) as ServiceSlug[]).filter(
+    (key) => key !== service
+  );
 
   const photos = getPhotos(service, region);
 
@@ -368,6 +384,12 @@ export default async function RegionServicePage({
         {
           "@type": "ListItem",
           position: 3,
+          name: `${search} 철거`,
+          item: `${SITE_URL}${areaUrl(region, district)}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
           name: seo.h1,
           item: pageUrl,
         },
@@ -381,17 +403,14 @@ export default async function RegionServicePage({
       description: seo.description,
       serviceType: item.shortTitle,
       url: pageUrl,
-      provider: {
-        "@type": "Organization",
-        name: COMPANY,
-        url: SITE_URL,
-        telephone: PHONE_DISPLAY,
-      },
+      provider: { "@id": `${SITE_URL}/#business` },
       areaServed: {
         "@type": "AdministrativeArea",
-        name: locationName,
+        name: official,
       },
     },
+    businessSchema(official),
+    faqSchema(seo.faqs),
   ];
 
   return (
@@ -608,6 +627,21 @@ export default async function RegionServicePage({
           </section>
         )}
 
+        {/* 지역 현장 특징 (시·군마다 다른 문단) */}
+
+        <section className="section">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-tag">LOCAL GUIDE</span>
+              <h2>{locationName} 철거 현장 특징</h2>
+            </div>
+
+            {seo.local.map((text) => (
+              <p key={text}>{text}</p>
+            ))}
+          </div>
+        </section>
+
         {/* 견적 안내 */}
 
         <section
@@ -689,6 +723,49 @@ export default async function RegionServicePage({
 
                   <p>{faq.answer}</p>
                 </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 같은 지역 다른 철거 · 근처 지역 같은 철거 */}
+
+        <section className="section">
+          <div className="container">
+            <div className="section-heading">
+              <span className="section-tag">MORE</span>
+              <h2>{search} 다른 철거 서비스</h2>
+            </div>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              <Link href={areaUrl(region, district)} className="btn btn-outline">
+                {search} 철거업체 전체 안내
+              </Link>
+
+              {otherServices.map((key) => (
+                <Link
+                  key={key}
+                  href={serviceRegionUrl(key, region, district)}
+                  className="btn btn-outline"
+                >
+                  {search} {SERVICE_SEO[key].keyword}
+                </Link>
+              ))}
+            </div>
+
+            <h3 style={{ marginTop: 28 }}>
+              근처 지역 {SERVICE_SEO[service].keyword}
+            </h3>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              {nearby.map((item2) => (
+                <Link
+                  key={item2.slug}
+                  href={serviceRegionUrl(service, region, item2.slug)}
+                  className="btn btn-outline"
+                >
+                  {searchName(region, item2.name)} {SERVICE_SEO[service].keyword}
+                </Link>
               ))}
             </div>
           </div>

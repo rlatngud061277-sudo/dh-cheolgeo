@@ -229,7 +229,7 @@ export const REGIONS = {
       cheongyang: "청양군",
       hongseong: "홍성군",
       yesan: "예산군",
-      tae안: "태안군",
+      taean: "태안군",
     },
   },
 

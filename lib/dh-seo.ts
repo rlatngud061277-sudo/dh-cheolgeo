@@ -9,7 +9,14 @@ import {
   isServiceSlug,
   type ServiceSlug,
   type RegionSlug,
+  PHONE_DISPLAY,
 } from "./dh-data";
+import {
+  SERVICE_SEO,
+  searchName,
+  officialName,
+  localParagraphs,
+} from "./dh-local";
 
 /* =====================================
    DH 종합철거 지역별 SEO 시스템
@@ -28,6 +35,7 @@ export type DhSeoContent = {
   intro: string;
   detail: string;
   checklist: string[];
+  local: string[];
   faqs: {
     question: string;
     answer: string;
@@ -391,6 +399,9 @@ export function getDhSeoContent(
 
   const area = location.fullName;
   const districtName = location.districtName;
+  const search = searchName(regionSlug, districtName);
+  const official = officialName(regionSlug, districtName);
+  const seoName = SERVICE_SEO[service];
 
   const key =
     `${regionSlug}-${districtSlug}-${serviceSlug}`;
@@ -459,7 +470,7 @@ export function getDhSeoContent(
 
       return {
         question:
-          `${districtName} ${faq.question}`,
+          `${search} ${faq.question}`,
         answer: faq.answer,
       };
     }
@@ -467,15 +478,16 @@ export function getDhSeoContent(
 
   /* SEO 제목 */
 
+  /* 예) 천안 아파트 철거 | 충남 천안시 주택·빌라 인테리어 철거 - DH 종합철거 */
   const title =
-    `${districtName} ${item.shortTitle} | ${COMPANY}`;
+    `${search} ${seoName.keyword} | ${area} ${seoName.tail} - ${COMPANY}`;
 
   /* 메타 설명 */
 
   const description = [
-    `${area} ${item.title} 상담.`,
+    `${official} ${item.title} ${COMPANY}.`,
     serviceIntro,
-    "철거 범위, 현장 조건과 견적 상담을 안내합니다.",
+    `현장 사진으로 철거 범위·폐기물 반출·작업 일정을 확인하고 견적을 안내합니다. ☎ ${PHONE_DISPLAY}`,
   ].join(" ");
 
   /* canonical */
@@ -495,6 +507,7 @@ export function getDhSeoContent(
     intro,
     detail,
     checklist,
+    local: localParagraphs(regionSlug, districtSlug, districtName),
     faqs,
     canonical,
   };

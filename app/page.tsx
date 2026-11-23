@@ -12,7 +12,6 @@ import {
   PHONE_DISPLAY,
   SERVICES,
   REGIONS,
-  serviceRegionUrl,
   type ServiceSlug,
 } from "../lib/dh-data";
 
@@ -23,7 +22,7 @@ import {
 export const metadata: Metadata = {
   title: {
     absolute:
-      "DH 종합철거 | 주택·아파트·상가·사무실 철거 전문",
+      "철거업체 DH 종합철거 | 경기·충남·충북 아파트·상가·사무실 철거·원상복구",
   },
   description:
     "DH 종합철거는 주택·아파트 철거, 상가 철거, 사무실 철거, 내부철거 및 원상복구 상담을 제공합니다. 경기·충남·충북 지역 철거 견적 문의.",
@@ -737,11 +736,7 @@ export default function HomePage() {
                       (district) => (
                         <Link
                           key={district.slug}
-                          href={serviceRegionUrl(
-                            "house",
-                            region.slug,
-                            district.slug
-                          )}
+                          href={`/areas/${region.slug}/${district.slug}`}
                         >
                           {district.name}
                           <ArrowIcon />
@@ -754,10 +749,8 @@ export default function HomePage() {
             </div>
 
             <p className="region-note">
-              지역 버튼은 주택·아파트 철거
-              개별페이지로 연결됩니다. 다른
-              철거 분야는 시공 분야 메뉴에서
-              확인할 수 있습니다.
+              지역을 누르면 해당 지역의 아파트·상가·사무실
+              철거와 원상복구 안내 페이지로 이동합니다.
             </p>
           </div>
         </section>

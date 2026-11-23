@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SERVICE_SEO } from "../../../lib/dh-local";
 
 import {
   SITE_URL,
@@ -54,7 +55,7 @@ export async function generateMetadata({
   const item = SERVICES[service];
   const url = `${SITE_URL}/services/${service}`;
 
-  const title = `${item.title} | 경기·충남·충북 ${COMPANY}`;
+  const title = `${SERVICE_SEO[service].keyword} 업체 | 경기·충남·충북 ${SERVICE_SEO[service].tail} - ${COMPANY}`;
 
   const description =
     `${COMPANY} ${item.title} 상담. ` +

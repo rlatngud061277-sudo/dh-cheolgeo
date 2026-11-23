@@ -52,9 +52,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       }))
     );
 
+  /* 지역 대표 페이지 (천안 철거업체 등) */
+
+  const areaPages: MetadataRoute.Sitemap = locations.map(
+    ({ region, district }) => ({
+      url: `${SITE_URL}/areas/${region}/${district}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.85,
+    })
+  );
+
+  const lastModified = new Date();
+
   return [
     ...home,
     ...servicePages,
+    ...areaPages,
     ...regionPages,
-  ];
+  ].map((page) => ({ ...page, lastModified }));
 }
