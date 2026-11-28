@@ -25,6 +25,23 @@ import {
   businessSchema,
   faqSchema,
 } from "../../../../lib/dh-local";
+import { getPlace } from "../../../../lib/dh-places";
+
+const AREA_TITLES = [
+  "{s} 철거업체 · {d1}·{d2} 아파트·상가 철거",
+  "{s} 철거 | {d1}·{d2}·{d3} 인테리어 철거·원상복구",
+  "{s} 철거 전문 · {d1} 내부 철거·폐업 철거",
+  "{a} 철거업체 · {d2}·{d3} 원상복구·사무실 철거",
+];
+
+function areaHash(v: string) {
+  let h = 2166136261;
+  for (let i = 0; i < v.length; i++) {
+    h ^= v.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
 
 /* =====================================
    지역 대표 페이지
@@ -50,15 +67,25 @@ function buildText(region: string, district: string) {
 
   const search = searchName(region, location.districtName);
   const official = officialName(region, location.districtName);
+  const place = getPlace(district);
 
   return {
     location,
     search,
     official,
-    title: `${search} 철거업체 | ${location.fullName} 아파트·상가·사무실 철거·원상복구 - ${COMPANY}`,
-    description:
-      `${official} 철거 전문 ${COMPANY}. 아파트·주택 인테리어 철거, 상가·음식점 폐업 철거, ` +
-      `사무실 칸막이 철거, 내부 부분 철거, 원상복구까지 현장 사진으로 먼저 견적 상담합니다. ☎ ${PHONE_DISPLAY}`,
+    place,
+    title: place
+      ? `${AREA_TITLES[areaHash(`${region}-${district}`) % AREA_TITLES.length]
+          .replace("{s}", search)
+          .replace("{a}", location.fullName)
+          .replace("{d1}", place.dongs[0])
+          .replace("{d2}", place.dongs[1])
+          .replace("{d3}", place.dongs[2])} | ${COMPANY}`
+      : `${search} 철거업체 | ${location.fullName} 아파트·상가·사무실 철거·원상복구 - ${COMPANY}`,
+    description: place
+      ? `${official}(${place.dongs.join("·")}) 철거 전문 ${COMPANY}. ${place.note} 현장 사진으로 먼저 견적 상담합니다. ☎ ${PHONE_DISPLAY}`
+      : `${official} 철거 전문 ${COMPANY}. 아파트·주택 인테리어 철거, 상가·음식점 폐업 철거, ` +
+        `사무실 칸막이 철거, 내부 부분 철거, 원상복구까지 현장 사진으로 먼저 견적 상담합니다. ☎ ${PHONE_DISPLAY}`,
     url: `${SITE_URL}${areaUrl(region, district)}`,
   };
 }
@@ -114,14 +141,17 @@ export default async function AreaPage({ params }: Props) {
     return notFound();
   }
 
-  const { location, search, official, url } = text;
-  const local = localParagraphs(region, district, location.districtName);
+  const { location, search, official, url, place } = text;
+  const local = [
+    ...(place ? [place.note] : []),
+    ...localParagraphs(region, district, location.districtName),
+  ];
   const nearby = nearbyDistricts(region, district, 10);
 
   const faqs = [
     {
       question: `${search} 철거 출장 가능한가요?`,
-      answer: `네, ${official} 전 지역 철거 상담이 가능합니다. 현장 주소와 사진을 보내주시면 작업 가능 일정과 범위를 안내해드립니다.`,
+      answer: `네, ${official}${place ? ` ${place.dongs.join("·")} 등` : ""} 전 지역 철거 상담이 가능합니다. 현장 주소와 사진을 보내주시면 작업 가능 일정과 범위를 안내해드립니다.`,
     },
     {
       question: `${search} 철거 견적은 어떻게 받나요?`,

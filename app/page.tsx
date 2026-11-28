@@ -274,9 +274,9 @@ export default function HomePage() {
             </div>
 
             <h1>
-              철거의 시작부터
+              경기·충남·충북 철거업체,
               <br />
-              <span>마무리까지.</span>
+              <span>시작부터 마무리까지.</span>
             </h1>
 
             <p className="hero-lead">

@@ -17,6 +17,7 @@ import {
   officialName,
   localParagraphs,
 } from "./dh-local";
+import { getPlace } from "./dh-places";
 
 /* =====================================
    DH 종합철거 지역별 SEO 시스템
@@ -303,6 +304,98 @@ const SERVICE_CONTENT: Record<
 };
 
 /* =====================================
+   서비스별 제목 틀 (지역마다 돌아가며 사용)
+   {s}=천안 {a}=충남 천안시 {d1}{d2}{d3}=대표 동네
+===================================== */
+
+const TITLE_PATTERNS: Record<ServiceSlug, string[]> = {
+  house: [
+    "{s} 아파트 철거 · {d1}·{d2} 주방·욕실 철거",
+    "{s} 아파트 철거업체 - {d1}·{d2} 인테리어 철거 견적",
+    "{s} 주택·아파트 내부 철거 · {d1} 리모델링 철거",
+    "{a} 아파트 철거 · {d2}·{d3} 빌라·주택 철거",
+  ],
+  commercial: [
+    "{s} 상가 철거 · {d1}·{d2} 매장·음식점 철거",
+    "{s} 폐업 철거 - {d1} 상가·카페 인테리어 철거",
+    "{s} 상가 철거업체 · {d2}·{d3} 식당 주방 철거",
+    "{a} 상가 철거 · {d1} 점포 정리·폐업 철거",
+  ],
+  office: [
+    "{s} 사무실 철거 · {d1}·{d2} 칸막이·천장 철거",
+    "{s} 사무실 이전 철거 - {d1} 파티션 철거 견적",
+    "{s} 사무실 철거업체 · {d2}·{d3} 사무실 인테리어 철거",
+    "{a} 사무실 철거 · {d1} 칸막이·바닥재 철거",
+  ],
+  interior: [
+    "{s} 내부 철거 · {d1}·{d2} 벽체·바닥 부분 철거",
+    "{s} 인테리어 철거 - {d1} 부분 철거·내부 철거",
+    "{s} 내부 철거업체 · {d2}·{d3} 리모델링 전 철거",
+    "{a} 내부 철거 · {d1} 욕실·주방 부분 철거",
+  ],
+  restoration: [
+    "{s} 원상복구 · {d1}·{d2} 상가·사무실 원상복구",
+    "{s} 원상복구 철거 - {d1} 퇴거 원상복구 견적",
+    "{s} 상가 원상복구업체 · {d2}·{d3} 매장 원상복구",
+    "{a} 원상복구 · {d1} 임대 종료 원상복구 철거",
+  ],
+};
+
+/* 서비스별 현장 사례 (동네 이름이 들어감) */
+const SITUATIONS: Record<ServiceSlug, string[]> = {
+  house: [
+    "{dong} 구축 아파트 주방·욕실 전체 철거",
+    "{dong} 입주 전 바닥재·천장 마감 철거",
+    "{dong} 빌라 리모델링 전 내부 전체 철거",
+    "{dong} 단독주택 붙박이장·벽체 철거",
+    "{dong} 확장 거실 마감재 철거",
+    "{dong} 매매 후 올수리 전 철거",
+  ],
+  commercial: [
+    "{dong} 음식점 폐업에 따른 주방 설비·후드 철거",
+    "{dong} 카페 업종 변경 전 인테리어 철거",
+    "{dong} 상가 점포 정리 철거",
+    "{dong} 미용실·학원 시설물 철거",
+    "{dong} 1층 매장 바닥·천장 철거",
+    "{dong} 상가 이전에 따른 집기·인테리어 철거",
+  ],
+  office: [
+    "{dong} 사무실 이전에 따른 칸막이 철거",
+    "{dong} 사무실 파티션·천장재 철거",
+    "{dong} 지식산업센터 사무실 정리 철거",
+    "{dong} 사무실 바닥재·카펫타일 철거",
+    "{dong} 회의실 벽체 철거",
+    "{dong} 공장 사무동 내부 철거",
+  ],
+  interior: [
+    "{dong} 욕실 타일·도기 부분 철거",
+    "{dong} 주방 벽체 철거",
+    "{dong} 가벽·몰딩 부분 철거",
+    "{dong} 바닥재만 걷어내는 부분 철거",
+    "{dong} 천장 텍스 철거",
+    "{dong} 리모델링 전 선별 철거",
+  ],
+  restoration: [
+    "{dong} 상가 임대 종료 원상복구",
+    "{dong} 사무실 퇴거 원상복구 철거",
+    "{dong} 음식점 원상복구와 주방 설비 철거",
+    "{dong} 매장 간판·인테리어 원상복구",
+    "{dong} 학원·교습소 원상복구",
+    "{dong} 계약서 기준 부분 원상복구",
+  ],
+};
+
+function pickSituations(service: ServiceSlug, key: string, dongs: readonly string[]) {
+  const pool = SITUATIONS[service];
+  const start = hashText(`${key}-sit`) % pool.length;
+  return [0, 2, 4].map((step, i) => pool[(start + step) % pool.length].replace("{dong}", dongs[i]));
+}
+
+function fillPattern(t: string, v: Record<string, string>) {
+  return t.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
+}
+
+/* =====================================
    지역별 상담 안내 문구
 ===================================== */
 
@@ -429,8 +522,11 @@ export function getDhSeoContent(
 
   /* 메인 소개 */
 
+  const placeEarly = getPlace(districtSlug);
   const intro = [
-    `${area}에서 ${item.title}를 계획하고 계신가요?`,
+    placeEarly
+      ? `${area} ${placeEarly.dongs.join("·")} 일대에서 ${item.title}를 계획하고 계신가요?`
+      : `${area}에서 ${item.title}를 계획하고 계신가요?`,
     regionIntro,
     serviceIntro,
     `${COMPANY}는 철거 대상과 현장 조건을 확인한 뒤 상담을 진행합니다.`,
@@ -449,7 +545,9 @@ export function getDhSeoContent(
 
   const checklist = [
     ...content.checks,
-    `${districtName} 현장의 접근 경로와 폐기물 반출 여건`,
+    placeEarly
+      ? `${placeEarly.dongs[0]}·${placeEarly.dongs[1]} 등 ${districtName} 현장의 접근 경로와 폐기물 반출 여건`
+      : `${districtName} 현장의 접근 경로와 폐기물 반출 여건`,
     "철거 희망 일정과 현장 사진 준비",
   ];
 
@@ -476,16 +574,32 @@ export function getDhSeoContent(
     }
   );
 
+  if (placeEarly) {
+    const localFaq = {
+      question: `${search} 어느 동네까지 출장하나요?`,
+      answer: `${area} ${placeEarly.dongs.join(", ")}을 포함한 ${districtName} 전 지역에 출장합니다. 현장 주소와 사진을 보내 주시면 작업 가능 일정을 안내해 드립니다.`,
+    };
+    faqs.splice(hashText(`${key}-lfaq`) % (faqs.length + 1), 0, localFaq);
+  }
+
   /* SEO 제목 */
 
   /* 예) 천안 아파트 철거 | 충남 천안시 주택·빌라 인테리어 철거 - DH 종합철거 */
-  const title =
-    `${search} ${seoName.keyword} | ${area} ${seoName.tail} - ${COMPANY}`;
+  const place = getPlace(districtSlug);
+  const [d1, d2, d3] = place?.dongs ?? [districtName, districtName, districtName];
+  const vars = { s: search, a: area, d1, d2, d3 };
+  const patterns = TITLE_PATTERNS[service];
+  const title = place
+    ? `${fillPattern(
+        patterns[(hashText(`${regionSlug}-${districtSlug}-title`) + Object.keys(SERVICES).indexOf(service)) % patterns.length],
+        vars
+      )} | ${COMPANY}`
+    : `${search} ${seoName.keyword} | ${area} ${seoName.tail} - ${COMPANY}`;
 
   /* 메타 설명 */
 
   const description = [
-    `${official} ${item.title} ${COMPANY}.`,
+    place ? `${official}(${d1}·${d2}·${d3}) ${item.title} ${COMPANY}.` : `${official} ${item.title} ${COMPANY}.`,
     serviceIntro,
     `현장 사진으로 철거 범위·폐기물 반출·작업 일정을 확인하고 견적을 안내합니다. ☎ ${PHONE_DISPLAY}`,
   ].join(" ");
@@ -507,7 +621,15 @@ export function getDhSeoContent(
     intro,
     detail,
     checklist,
-    local: localParagraphs(regionSlug, districtSlug, districtName),
+    local: [
+      ...(placeEarly
+        ? [
+            placeEarly.note,
+            `${placeEarly.dongs.join("·")} 일대에서는 ${pickSituations(service, key, placeEarly.dongs).join(", ")} 같은 ${item.shortTitle} 문의가 많습니다.`,
+          ]
+        : []),
+      ...localParagraphs(regionSlug, districtSlug, districtName),
+    ],
     faqs,
     canonical,
   };

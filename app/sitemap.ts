@@ -13,6 +13,9 @@ import {
    경기·충남·충북 전체 지역
 ===================================== */
 
+/** 내용을 고친 날짜 — 다시 손보면 바꿔 주세요. */
+const UPDATED = new Date("2026-11-28");
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const locations = getAllLocations();
 
@@ -23,6 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const home: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
+      lastModified: UPDATED,
       changeFrequency: "weekly",
       priority: 1,
     },
@@ -33,6 +37,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const servicePages: MetadataRoute.Sitemap =
     serviceSlugs.map((service) => ({
       url: `${SITE_URL}/services/${service}`,
+      lastModified: UPDATED,
       changeFrequency: "monthly",
       priority: 0.9,
     }));
@@ -47,6 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           region,
           district
         )}`,
+        lastModified: UPDATED,
         changeFrequency: "monthly" as const,
         priority: 0.8,
       }))
@@ -57,17 +63,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const areaPages: MetadataRoute.Sitemap = locations.map(
     ({ region, district }) => ({
       url: `${SITE_URL}/areas/${region}/${district}`,
+      lastModified: UPDATED,
       changeFrequency: "monthly" as const,
       priority: 0.85,
     })
   );
-
-  const lastModified = new Date();
 
   return [
     ...home,
     ...servicePages,
     ...areaPages,
     ...regionPages,
-  ].map((page) => ({ ...page, lastModified }));
+  ];
 }
