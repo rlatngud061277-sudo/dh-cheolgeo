@@ -18,7 +18,7 @@ import {
   type ServiceSlug,
 } from "../../../../../lib/dh-data";
 
-import { getDhSeoContent } from "../../../../../lib/dh-seo";
+import { getDhSeoContent, headline } from "../../../../../lib/dh-seo";
 import {
   SERVICE_SEO,
   searchName,
@@ -351,6 +351,7 @@ export default async function RegionServicePage({
   const estimateItems = ESTIMATE_GUIDES[service];
 
   const search = searchName(region, location.districtName);
+  const heading = headline(service, region, district, search, locationName);
   const official = officialName(region, location.districtName);
   const nearby = nearbyDistricts(region, district, 8);
   const otherServices = (Object.keys(SERVICES) as ServiceSlug[]).filter(
@@ -458,9 +459,9 @@ export default async function RegionServicePage({
             </span>
 
             <h1>
-              {locationName} {item.shortTitle}
+              {heading.main}
               <br />
-              <strong>{COMPANY}</strong>
+              <strong>{heading.sub}</strong>
             </h1>
 
             <p>{seo.intro}</p>

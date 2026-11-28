@@ -648,3 +648,43 @@ export function getDhSeoContent(
     canonical,
   };
 }
+
+/* =====================================
+   화면 큰 제목(H1) — 지역·서비스마다 다른 문구
+   첫 줄: 지역+서비스 검색어 / 둘째 줄: 동네 + 상호
+===================================== */
+
+const H1_MAIN: Record<ServiceSlug | "area", string[]> = {
+  house: ["{s} 아파트 철거", "{d1}·{d2} 아파트 내부 철거", "{s} 주택·빌라 철거", "{a} 주방·욕실 철거"],
+  commercial: ["{s} 상가 철거", "{d1}·{d2} 매장 폐업 철거", "{s} 음식점·카페 철거", "{a} 점포 정리 철거"],
+  office: ["{s} 사무실 철거", "{d1}·{d2} 칸막이 철거", "{s} 사무실 이전 철거", "{a} 파티션·천장 철거"],
+  interior: ["{s} 내부 철거", "{d1}·{d2} 부분 철거", "{s} 리모델링 전 철거", "{a} 벽체·바닥 철거"],
+  restoration: ["{s} 원상복구", "{d1}·{d2} 상가 원상복구", "{s} 퇴거 원상복구", "{a} 사무실 원상복구"],
+  area: ["{s} 철거업체", "{d1}·{d2} 철거업체", "{a} 철거·원상복구", "{s} 인테리어 철거"],
+};
+
+const H1_SUB = [
+  "{d1}부터 {d3}까지 · {c}",
+  "{d2} 현장도 {c}",
+  "{c} {d1} 출장 상담",
+  "{d1}·{d3} 현장 견적 · {c}",
+];
+
+export function headline(
+  service: ServiceSlug | "area",
+  regionSlug: string,
+  districtSlug: string,
+  search: string,
+  area: string
+) {
+  const place = getPlace(districtSlug);
+  const [d1, d2, d3] = place?.dongs ?? [search, search, search];
+  const v = { s: search, a: area, d1, d2, d3, c: COMPANY };
+  const offset = service === "area" ? 0 : Object.keys(SERVICES).indexOf(service) + 1;
+  const h = hashText(`${regionSlug}-${districtSlug}-h1`) + offset;
+  const mains = H1_MAIN[service];
+  return {
+    main: fillPattern(mains[h % mains.length], v),
+    sub: place ? fillPattern(H1_SUB[(hashText(`${regionSlug}-${districtSlug}-sub`) + offset * 3) % H1_SUB.length], v) : COMPANY,
+  };
+}

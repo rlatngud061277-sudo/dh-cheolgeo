@@ -26,7 +26,7 @@ import {
   faqSchema,
 } from "../../../../lib/dh-local";
 import { getPlace } from "../../../../lib/dh-places";
-import { fitTitle } from "../../../../lib/dh-seo";
+import { fitTitle, headline } from "../../../../lib/dh-seo";
 
 const AREA_TITLES = [
   "{s} 철거업체 · {d1}·{d2} 아파트·상가 철거",
@@ -146,6 +146,7 @@ export default async function AreaPage({ params }: Props) {
   }
 
   const { location, search, official, url, place } = text;
+  const heading = headline("area", region, district, search, location.fullName);
   const local = [
     ...(place ? [place.note] : []),
     ...localParagraphs(region, district, location.districtName),
@@ -217,9 +218,9 @@ export default async function AreaPage({ params }: Props) {
             <span className="hero-label">{official} 철거</span>
 
             <h1>
-              {location.fullName} 철거업체
+              {heading.main}
               <br />
-              <strong>{COMPANY}</strong>
+              <strong>{heading.sub}</strong>
             </h1>
 
             <p>
