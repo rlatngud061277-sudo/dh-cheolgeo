@@ -54,7 +54,14 @@ export async function generateMetadata({
   const item = SERVICES[service];
   const url = `${SITE_URL}/services/${service}`;
 
-  const title = `${SERVICE_SEO[service].keyword} 업체 | 경기·충남·충북 ${SERVICE_SEO[service].tail} - ${COMPANY}`;
+  const HUB_TITLES: Record<string, string> = {
+    house: "아파트 철거 업체 · 경기·충남·충북 주택·빌라 철거",
+    commercial: "상가 철거 업체 · 경기·충남·충북 폐업·음식점 철거",
+    office: "사무실 철거 업체 · 경기·충남·충북 칸막이·천장 철거",
+    interior: "내부 철거 업체 · 경기·충남·충북 벽체·바닥 철거",
+    restoration: "원상복구 업체 · 경기·충남·충북 상가·사무실 원상복구",
+  };
+  const title = `${HUB_TITLES[service] ?? `${SERVICE_SEO[service].keyword} 업체`} | ${COMPANY}`;
 
   const description =
     `${COMPANY} ${item.title} 상담. ` +

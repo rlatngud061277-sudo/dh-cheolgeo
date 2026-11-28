@@ -26,10 +26,11 @@ import {
   faqSchema,
 } from "../../../../lib/dh-local";
 import { getPlace } from "../../../../lib/dh-places";
+import { fitTitle } from "../../../../lib/dh-seo";
 
 const AREA_TITLES = [
   "{s} 철거업체 · {d1}·{d2} 아파트·상가 철거",
-  "{s} 철거 | {d1}·{d2}·{d3} 인테리어 철거·원상복구",
+  "{s} 철거 - {d1}·{d2}·{d3} 인테리어 철거·원상복구",
   "{s} 철거 전문 · {d1} 내부 철거·폐업 철거",
   "{a} 철거업체 · {d2}·{d3} 원상복구·사무실 철거",
 ];
@@ -75,13 +76,16 @@ function buildText(region: string, district: string) {
     official,
     place,
     title: place
-      ? `${AREA_TITLES[areaHash(`${region}-${district}`) % AREA_TITLES.length]
-          .replace("{s}", search)
-          .replace("{a}", location.fullName)
-          .replace("{d1}", place.dongs[0])
-          .replace("{d2}", place.dongs[1])
-          .replace("{d3}", place.dongs[2])} | ${COMPANY}`
-      : `${search} 철거업체 | ${location.fullName} 아파트·상가·사무실 철거·원상복구 - ${COMPANY}`,
+      ? fitTitle(
+          AREA_TITLES[areaHash(`${region}-${district}`) % AREA_TITLES.length]
+            .replace("{s}", search)
+            .replace("{a}", location.fullName)
+            .replace("{d1}", place.dongs[0])
+            .replace("{d2}", place.dongs[1])
+            .replace("{d3}", place.dongs[2]),
+          `${search} 철거업체 · 아파트·상가 철거`
+        )
+      : fitTitle(`${search} 철거업체 · 아파트·상가·사무실 철거`, `${search} 철거업체`),
     description: place
       ? `${official}(${place.dongs.join("·")}) 철거 전문 ${COMPANY}. ${place.note} 현장 사진으로 먼저 견적 상담합니다. ☎ ${PHONE_DISPLAY}`
       : `${official} 철거 전문 ${COMPANY}. 아파트·주택 인테리어 철거, 상가·음식점 폐업 철거, ` +

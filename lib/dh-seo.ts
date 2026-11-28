@@ -391,6 +391,17 @@ function pickSituations(service: ServiceSlug, key: string, dongs: readonly strin
   return [0, 2, 4].map((step, i) => pool[(start + step) % pool.length].replace("{dong}", dongs[i]));
 }
 
+/** 네이버 권장 40자 이내로 제목을 맞춥니다. */
+export function fitTitle(main: string, short: string, limit = 40) {
+  const brand = ` | ${COMPANY}`;
+  let t = main;
+  if ((t + brand).length > limit) t = t.replace(/(\S+?(?:동|읍|면|구|리))·\S+?(?:동|읍|면|구|리)(?=\s)/, "$1");
+  if ((t + brand).length > limit) t = t.replace("철거업체", "철거").replace(" 견적", "");
+  if ((t + brand).length > limit) t = t.replace(/^(경기|충남|충북) \S+(시|군) /, (m) => m.replace(/^(경기|충남|충북) /, ""));
+  if ((t + brand).length > limit) t = short;
+  return t + brand;
+}
+
 function fillPattern(t: string, v: Record<string, string>) {
   return t.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
 }
@@ -590,10 +601,13 @@ export function getDhSeoContent(
   const vars = { s: search, a: area, d1, d2, d3 };
   const patterns = TITLE_PATTERNS[service];
   const title = place
-    ? `${fillPattern(
-        patterns[(hashText(`${regionSlug}-${districtSlug}-title`) + Object.keys(SERVICES).indexOf(service)) % patterns.length],
-        vars
-      )} | ${COMPANY}`
+    ? fitTitle(
+        fillPattern(
+          patterns[(hashText(`${regionSlug}-${districtSlug}-title`) + Object.keys(SERVICES).indexOf(service)) % patterns.length],
+          vars
+        ),
+        `${search} ${seoName.keyword}`
+      )
     : `${search} ${seoName.keyword} | ${area} ${seoName.tail} - ${COMPANY}`;
 
   /* 메타 설명 */
